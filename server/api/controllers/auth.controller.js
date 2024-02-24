@@ -33,16 +33,21 @@ export const signup = async (req, res, next) => {
 };
 
 export const signin = async (req, res, next) => {
-  const { username, password } = req.body;
+  const { username, email, password } = req.body;
 
-  if (!username || !password || username === "" || password === "") {
+  const user = username || email;
+
+  if (!user || !password || user === "" || password === "") {
     return next(errorHandler(400, "All fields are required"));
   }
 
   try {
-    const validUser = await User.findOne({ username });
+    let validUser = await User.findOne({ username:user });
     if (!validUser) {
-      return next(errorHandler(404, "User not found"));
+      validUser = await User.findOne({ email:user });
+      if (!validUser) {
+        return next(errorHandler(404, "User not found"));
+      }
     }
     const validPassword = bcrypt.compareSync(password, validUser.password);
     if (!validPassword) {
@@ -51,11 +56,14 @@ export const signin = async (req, res, next) => {
 
     const token = jwt.sign({ id: validUser._id }, process.env.JWT_SECRET);
 
-    const {password: pass, ...rest} = validUser._doc;
+    const { password: pass, ...rest } = validUser._doc;
 
-    res.status(200).cookie('acess_token',token,{
-      httpOnly:true
-    }).json(rest)
+    res
+      .status(200)
+      .cookie("acess_token", token, {
+        httpOnly: true,
+      })
+      .json(rest);
   } catch (error) {
     return next(error);
   }
