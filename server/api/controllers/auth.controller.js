@@ -57,7 +57,7 @@ export const signin = async (req, res, next) => {
     const token = jwt.sign(
       {
         id: validUser._id,
-        isAdmin: validUser.userRole === "ADMIN" ? true : false,
+        userRole: validUser.userRole,
       },
       process.env.JWT_SECRET
     );
@@ -84,7 +84,7 @@ export const googleAuth = async (req, res, next) => {
       const token = jwt.sign(
         {
           id: user._id,
-          isAdmin: user.userRole === "ADMIN" ? true : false,
+          userRole: user.userRole,
         },
         process.env.JWT_SECRET
       );
@@ -113,7 +113,7 @@ export const googleAuth = async (req, res, next) => {
       const token = jwt.sign(
         {
           id: newUser._id,
-          isAdmin: newUser.userRole === "ADMIN" ? true : false,
+          userRole: newUser.userRole,
         },
         process.env.JWT_SECRET
       );
