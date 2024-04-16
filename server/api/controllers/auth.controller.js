@@ -2,6 +2,7 @@ import User from "../models/user.model.js";
 import bcrypt from "bcryptjs";
 import { errorHandler } from "../utils/error.js";
 import jwt from "jsonwebtoken";
+import Post from "../models/post.model.js";
 
 export const signup = async (req, res, next) => {
   const { username, email, password } = req.body;
@@ -32,7 +33,7 @@ export const signup = async (req, res, next) => {
   }
 };
 
-export const signin = async (req, res, next) => {
+export const signIn = async (req, res, next) => {
   const { username, email, password } = req.body;
 
   const user = username || email;
