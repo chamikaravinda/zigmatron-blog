@@ -55,7 +55,6 @@ export default function DashSidebar() {
               <Sidebar.Item
                 active={tab === "posts"}
                 icon={HiDocumentText}
-                lable={"User"}
                 labelColor="dark"
                 as="div"
               >
