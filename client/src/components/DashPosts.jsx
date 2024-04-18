@@ -4,8 +4,10 @@ import { Table } from "flowbite-react";
 import { Link } from "react-router-dom";
 
 export default function DashPosts() {
-  const { currentUser } = useSelector((state) => state.user);
   const [userPosts, setUserPosts] = useState([]);
+  const [showMore, setShowMore] = useState(true);
+
+  const { currentUser } = useSelector((state) => state.user);
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -14,6 +16,9 @@ export default function DashPosts() {
         const data = await res.json();
         if (res.ok) {
           setUserPosts(data.posts);
+          if (data.posts.length < 9) {
+            setShowMore(false);
+          }
         }
       } catch (error) {
         console.log(error);
@@ -24,6 +29,21 @@ export default function DashPosts() {
     }
   }, [currentUser]);
 
+  const handleShowMore = async () => {
+    const startIndex = userPosts.length;
+    try{
+      const res = await fetch(`/api/posts/get?userId=${currentUser._id}&startIndex=${startIndex}`);
+      const data = await res.json();
+        if (res.ok) {
+          setUserPosts((prev)=>[...prev,...data.posts]);
+          if (data.posts.length < 9) {
+            setShowMore(false);
+          }
+        }
+    }catch(error){
+      console.log(error);
+    }
+  };
   return (
     <div
       className="table-auto overflow-x-scroll md:mx-auto p-3 scrollbar
@@ -34,12 +54,18 @@ export default function DashPosts() {
         <>
           <Table hoverable className="shadow-md">
             <Table.Head>
-              <Table.HeadCell>Date updated</Table.HeadCell>
-              <Table.HeadCell>Post image</Table.HeadCell>
-              <Table.HeadCell>Post title</Table.HeadCell>
-              <Table.HeadCell>Category</Table.HeadCell>
-              <Table.HeadCell>Delete</Table.HeadCell>
-              <Table.HeadCell>
+              <Table.HeadCell className="bg-gray-200">
+                Date updated
+              </Table.HeadCell>
+              <Table.HeadCell className="bg-gray-200">
+                Post image
+              </Table.HeadCell>
+              <Table.HeadCell className="bg-gray-200">
+                Post title
+              </Table.HeadCell>
+              <Table.HeadCell className="bg-gray-200">Category</Table.HeadCell>
+              <Table.HeadCell className="bg-gray-200">Delete</Table.HeadCell>
+              <Table.HeadCell className="bg-gray-200">
                 <span>Edit</span>
               </Table.HeadCell>
             </Table.Head>
@@ -87,6 +113,14 @@ export default function DashPosts() {
               ))}
             </Table.Body>
           </Table>
+          {showMore && (
+            <button
+              onClick={handleShowMore}
+              className="w-full text-teal-500 self-center text-sm py-7"
+            >
+              Show More
+            </button>
+          )}
         </>
       ) : (
         <p> You have no post yet </p>

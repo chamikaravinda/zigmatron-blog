@@ -64,7 +64,7 @@ export default function CreatePost() {
     e.preventDefault();
     setPublishError(null);
     try {
-      const res = await fetch("/api/post/create", {
+      const res = await fetch("/api/posts/create", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
