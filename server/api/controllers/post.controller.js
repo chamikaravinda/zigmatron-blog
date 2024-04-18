@@ -68,3 +68,16 @@ export const getPosts = async (req, res, next) => {
     next(error);
   }
 };
+
+//TODO : Get the post owner user from the database
+export const deletePost = async (req, res, next) => {
+  if (!req.user.userRole === "ADMIN" || req.user.id !== req.params.userId) {
+    return next(errorHandler(403, "Your are not allowed to delete this post"));
+  }
+  try {
+    await Post.findByIdAndDelete(req.params.postId);
+    res.status(200).json("The post had been deleted");
+  } catch (error) {
+    next(error);
+  }
+};
