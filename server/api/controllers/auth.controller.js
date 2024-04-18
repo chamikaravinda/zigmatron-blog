@@ -2,6 +2,7 @@ import User from "../models/user.model.js";
 import bcrypt from "bcryptjs";
 import { errorHandler } from "../utils/error.js";
 import jwt from "jsonwebtoken";
+import Post from "../models/post.model.js";
 
 export const signup = async (req, res, next) => {
   const { username, email, password } = req.body;
@@ -32,7 +33,7 @@ export const signup = async (req, res, next) => {
   }
 };
 
-export const signin = async (req, res, next) => {
+export const signIn = async (req, res, next) => {
   const { username, email, password } = req.body;
 
   const user = username || email;
@@ -54,7 +55,13 @@ export const signin = async (req, res, next) => {
       return next(errorHandler(400, "Invalid Password"));
     }
 
-    const token = jwt.sign({ id: validUser._id }, process.env.JWT_SECRET);
+    const token = jwt.sign(
+      {
+        id: validUser._id,
+        userRole: validUser.userRole,
+      },
+      process.env.JWT_SECRET
+    );
 
     const { password: pass, ...rest } = validUser._doc;
 
@@ -75,7 +82,13 @@ export const googleAuth = async (req, res, next) => {
   try {
     const user = await User.findOne({ email });
     if (user) {
-      const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
+      const token = jwt.sign(
+        {
+          id: user._id,
+          userRole: user.userRole,
+        },
+        process.env.JWT_SECRET
+      );
       const { password, ...rest } = user._doc;
       res
         .status(200)
@@ -98,7 +111,13 @@ export const googleAuth = async (req, res, next) => {
         profilePicture: googlePhotoUrl,
       });
       await newUser.save();
-      const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET);
+      const token = jwt.sign(
+        {
+          id: newUser._id,
+          userRole: newUser.userRole,
+        },
+        process.env.JWT_SECRET
+      );
       const { password, ...rest } = newUser._doc;
       res
         .status(200)
