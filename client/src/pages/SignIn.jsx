@@ -1,19 +1,27 @@
-import { Alert, Button, Label, Spinner, TextInput } from "flowbite-react";
+import { Button, Label, TextInput } from "flowbite-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
+import { signInSuccess } from "../state/user/userSlice";
 import {
-  signInStart,
-  signInFailure,
-  signInSuccess,
-} from "../state/user/userSlice";
+  loadingStart,
+  loadingStop,
+  errorNotification,
+} from "../state/notifications/notificationSlice";
 import OAuth from "../components/OAuth";
+import { useEffect } from "react";
 
 export default function Sig() {
   const [formData, setFormData] = useState({});
-  const { loading, error: errorMessage } = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    return () => {
+      dispatch(loadingStop());
+    };
+  }, []);
+
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -24,25 +32,27 @@ export default function Sig() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.email || !formData.password) {
-      return dispatch(signInFailure("Please fill out all the fields"));
+      return dispatch(errorNotification("Please fill out all the fields"));
     }
     try {
-      dispatch(signInStart());
+      dispatch(loadingStart());
       const res = await fetch("api/auth/signin", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
       const data = await res.json();
-      if (data.success === false) {
-        dispatch(signInFailure(data.message));
+
+      if (!res.ok) {
+        dispatch(errorNotification(data.message));
+        return;
       }
-      if (res.ok) {
-        dispatch(signInSuccess(data));
-        navigate("/");
-      }
+
+      dispatch(signInSuccess(data));
+      dispatch(loadingStop());
+      navigate("/");
     } catch (error) {
-      dispatch(signInFailure(error.message));
+      dispatch(errorNotification(error.message));
     }
   };
 
@@ -82,33 +92,17 @@ export default function Sig() {
                 onChange={handleChange}
               />
             </div>
-            <Button
-              gradientDuoTone="purpleToPink"
-              type="submit"
-              disabled={loading}
-            >
-              {loading ? (
-                <>
-                  <Spinner size="sm" />
-                  <span className="pl-3">Loading...</span>
-                </>
-              ) : (
-                "Sign In"
-              )}
+            <Button gradientDuoTone="purpleToPink" type="submit">
+              Sign In
             </Button>
-            <OAuth/>
+            <OAuth />
           </form>
           <div className="flex gap-2 text-sm mt-5">
-            <span>Dont Have an account ?</span>
+            <span>{"Don't have an account ?"}</span>
             <Link to="/sign-up" className="text-blue-500">
               Sign up
             </Link>
           </div>
-          {errorMessage && (
-            <Alert className="mt-5" color="failure">
-              {errorMessage}
-            </Alert>
-          )}
         </div>
       </div>
     </div>
