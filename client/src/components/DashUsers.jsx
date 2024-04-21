@@ -48,7 +48,22 @@ export default function DashUsers() {
     }
   };
 
-  const handleDeleteUser = async () => {};
+  const handleDeleteUser = async () => {
+    try {
+      const res = await fetch(`/api/user/delete/${userIdToDelete}`, {
+        method: "DELETE",
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        //TODO : Move all the error messages to redux state and dispatch using a common error model;
+        console.log(data.message);
+      }
+      setUsers((prev) => prev.filter((user) => user._id !== userIdToDelete));
+      setShowModel(false);
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
   return (
     <div
       className="table-auto overflow-x-scroll md:mx-auto p-3 scrollbar
