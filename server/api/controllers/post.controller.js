@@ -1,7 +1,7 @@
 import { errorHandler } from "../utils/error.js";
 import Post from "../models/post.model.js";
 
-export const create = async (req, res, next) => {
+export const createPost = async (req, res, next) => {
   if (!(req.user.userRole == "ADMIN")) {
     return next(errorHandler(403, "Your are not allowed to create a post"));
   }
@@ -77,6 +77,34 @@ export const deletePost = async (req, res, next) => {
   try {
     await Post.findByIdAndDelete(req.params.postId);
     res.status(200).json("The post had been deleted");
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updatePost = async (req, res, next) => {
+  if (!req.user.userRole === "ADMIN" || req.user.id !== req.params.userId) {
+    return next(errorHandler(403, "Your are not allowed to update this post"));
+  }
+
+  if (!req.body.title || !req.body.content) {
+    return next(errorHandler(400, "Please provide all required fields"));
+  }
+
+  try {
+    const updatePost = await Post.findByIdAndUpdate(
+      req.params.postId,
+      {
+        $set: {
+          title: req.body.title,
+          content: req.body.content,
+          category: req.body.category,
+          image: req.body.image,
+        },
+      },
+      { new: true }
+    );
+    res.status(200).json(updatePost);
   } catch (error) {
     next(error);
   }
