@@ -8,7 +8,7 @@ import notificationReducer from "./notifications/notificationSlice";
 const rootReducer = combineReducers({
   user: useReducer,
   theme: themeReducer,
-  notification: notificationReducer
+  notification: notificationReducer,
 });
 
 const persistConfig = {
@@ -21,7 +21,10 @@ const persistedReducer = persistReducer(persistConfig, rootReducer);
 export const store = configureStore({
   reducer: persistedReducer,
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware({ serializableCheck: false }),
+    getDefaultMiddleware({
+      serializableCheck: false,
+      thunk: {},
+    }),
 });
 
 export const persistor = persistStore(store);

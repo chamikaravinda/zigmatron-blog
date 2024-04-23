@@ -1,24 +1,20 @@
 import { Button, Label, TextInput } from "flowbite-react";
 import { Link, useNavigate } from "react-router-dom";
-import { useState } from "react";
-import { useDispatch } from "react-redux";
-import { signInSuccess } from "../state/user/userSlice";
-import {
-  loadingStart,
-  loadingStop,
-  errorNotification,
-} from "../state/notifications/notificationSlice";
+import { useState, useEffect } from "react";
 import OAuth from "../components/OAuth";
-import { useEffect } from "react";
+import {
+  dispatchError,
+  dispatchStopLoading,
+} from "../actions/notifications.action";
+import { userSingIn } from "../actions/users.action";
 
-export default function Sig() {
+export default function SignIn() {
   const [formData, setFormData] = useState({});
-  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   useEffect(() => {
     return () => {
-      dispatch(loadingStop());
+      dispatchStopLoading();
     };
   }, []);
 
@@ -29,31 +25,17 @@ export default function Sig() {
     });
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    if (!formData.email || !formData.password) {
-      return dispatch(errorNotification("Please fill out all the fields"));
+    if (!formData.username || !formData.password) {
+      return dispatchError("Please fill out all the fields");
     }
-    try {
-      dispatch(loadingStart());
-      const res = await fetch("api/auth/signin", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
-      const data = await res.json();
 
-      if (!res.ok) {
-        dispatch(errorNotification(data.message));
-        return;
-      }
-
-      dispatch(signInSuccess(data));
-      dispatch(loadingStop());
+    const signInSuccess = () => {
       navigate("/");
-    } catch (error) {
-      dispatch(errorNotification(error.message));
-    }
+    };
+
+    userSingIn(formData, signInSuccess);
   };
 
   return (
@@ -77,14 +59,14 @@ export default function Sig() {
             <div>
               <Label value="Your Email" />
               <TextInput
-                type="email"
-                placeholder="E-mail"
-                id="email"
+                type="text"
+                placeholder="username"
+                id="username"
                 onChange={handleChange}
               />
             </div>
             <div>
-              <Label value="Your Passoword" />
+              <Label value="Your Password" />
               <TextInput
                 type="password"
                 placeholder="Password"
@@ -98,7 +80,7 @@ export default function Sig() {
             <OAuth />
           </form>
           <div className="flex gap-2 text-sm mt-5">
-            <span>{"Don't have an account ?"}</span>
+            <span>Don&apos;t have an account ?</span>
             <Link to="/sign-up" className="text-blue-500">
               Sign up
             </Link>

@@ -1,4 +1,4 @@
-import { errorHandler } from "../utils/error.js";
+import { errorHandler } from "../utils/respons.js";
 import User from "../models/user.model.js";
 
 export const test = (req, res) => {
