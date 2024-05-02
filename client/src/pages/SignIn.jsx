@@ -6,7 +6,7 @@ import {
   dispatchError,
   dispatchStopLoading,
 } from "../actions/notifications.action";
-import { userSingIn } from "../actions/users.action";
+import { userSingIn } from "../actions/auth.action.js";
 
 export default function SignIn() {
   const [formData, setFormData] = useState({});

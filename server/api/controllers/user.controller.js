@@ -1,4 +1,4 @@
-import { errorHandler } from "../utils/respons.js";
+import { errorHandler, successHandler } from "../utils/response.js";
 import User from "../models/user.model.js";
 
 export const test = (req, res) => {
@@ -46,7 +46,7 @@ export const updateUser = async (req, res, next) => {
       { new: true }
     );
     const { password, ...rest } = updateUser._doc;
-    res.status(200).json(rest);
+    res.status(200).json(successHandler(200, "Update post success", rest));
   } catch (error) {
     next(error);
   }
@@ -58,7 +58,7 @@ export const deleteUser = async (req, res, next) => {
   }
   try {
     await User.findByIdAndDelete(req.params.userId);
-    res.status(200).json("User has been delete");
+    res.status(200).json(successHandler(200, "User has been delete"));
   } catch (error) {
     next(error);
   }
@@ -69,7 +69,7 @@ export const signout = (req, res, next) => {
     res
       .clearCookie("access_token")
       .status(200)
-      .json("User has been signed out");
+      .json(successHandler(200, "User has been signed out"));
   } catch (error) {
     next(error);
   }

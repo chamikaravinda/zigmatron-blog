@@ -7,13 +7,12 @@ import {
   HiDocumentText,
   HiOutlineUser,
 } from "react-icons/hi";
-import { signOutSuccess } from "../state/user/userSlice";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
+import { signOut } from "../actions/user.action";
 
 export default function DashSidebar() {
   const location = useLocation();
   const [tab, setTab] = useState("");
-  const dispatch = useDispatch();
   const { currentUser } = useSelector((state) => state.user);
 
   useEffect(() => {
@@ -23,22 +22,6 @@ export default function DashSidebar() {
       setTab(tabFromUrl);
     }
   }, [location.search]);
-
-  const handleSignOut = async () => {
-    try {
-      const res = await fetch("/api/user/signout", {
-        method: "POST",
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        console.log(data.message);
-      } else {
-        dispatch(signOutSuccess());
-      }
-    } catch (error) {
-      console.log(error.message);
-    }
-  };
 
   return (
     <Sidebar className="w-full md:w-56">
@@ -82,7 +65,7 @@ export default function DashSidebar() {
           <Sidebar.Item
             icon={HiArrowSmRight}
             className="cursor-pointer"
-            onClick={handleSignOut}
+            onClick={signOut}
           >
             Sign Out
           </Sidebar.Item>

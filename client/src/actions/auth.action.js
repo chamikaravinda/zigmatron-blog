@@ -4,7 +4,7 @@ import {
   dispatchError,
   dispatchStopLoading,
   dispatchStartLoading,
-} from "../actions/notifications.action";
+} from "./notifications.action";
 
 export const userSingIn = (formData, success) => {
   dispatchStartLoading();

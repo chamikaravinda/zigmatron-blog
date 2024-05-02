@@ -38,25 +38,29 @@ export default function CommonNotifier() {
       )}
       {success && (
         <div className="absolute left-1/2 top-28 transform -translate-x-1/2 -translate-y-1/2 z-10 min-w-16">
-        <Toast className="bg-green-200 dark:bg-green-200 p-1">
-          <div
-            className="inline-flex h-10 min-w-10 shrink-0 items-center justify-center 
+          <Toast className="bg-green-200 dark:bg-green-200 p-1">
+            <div
+              className="inline-flex h-10 min-w-10 shrink-0 items-center justify-center 
           rounded-lg text-white bg-green-800 dark:bg-green-800 dark:text-green-200"
-          >
-            <HiCheck className="h-5 w-5" />
-          </div>
-          <div className="ml-3 text-sm font-normal text-gray-800">
-            {success}
-          </div>
-          <Toast.Toggle
-            className="hover:bg-green-200 dark:hover:bg-green-200 dark:bg-green-200 bg-green-200 ml-4"
-            onClick={closeMessage}
-          />
-        </Toast>
-      </div>
+            >
+              <HiCheck className="h-5 w-5" />
+            </div>
+            <div className="ml-3 text-sm font-normal text-gray-800">
+              {success}
+            </div>
+            <Toast.Toggle
+              className="hover:bg-green-200 dark:hover:bg-green-200 dark:bg-green-200 bg-green-200 ml-4"
+              onClick={closeMessage}
+            />
+          </Toast>
+        </div>
       )}
       {loading && (
-        <Spinner aria-label="Extra large spinner example" size="xl" />
+        <div className="absolute z-10 h-full w-full bg-black bg-opacity-50">
+          <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10">
+            <Spinner aria-label="Extra large spinner example" size="xl" />
+          </div>
+        </div>
       )}
     </>
   );

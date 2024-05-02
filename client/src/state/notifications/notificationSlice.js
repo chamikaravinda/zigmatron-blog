@@ -23,10 +23,12 @@ const notificationSlice = createSlice({
     errorNotification: (state, action) => {
       state.loading = false;
       state.error = action.payload;
+      state.success = null;
     },
     successNotification: (state, action) => {
       state.loading = false;
       state.success = action.payload;
+      state.error = null;
     },
     closeNotification: (state) => {
       state.loading = false;
