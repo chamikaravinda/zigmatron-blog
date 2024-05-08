@@ -46,6 +46,7 @@ export default function DashProfile() {
       setImageFileUrl(downloadURL);
       setFormData({ ...formData, profilePicture: downloadURL });
       setImageFileUploadProgress(null);
+      setImageFile(null);
     };
 
     await uploadProfilePicture(imageFile, inProgress, failure, success);
@@ -79,12 +80,12 @@ export default function DashProfile() {
       dispatchError("Please wait for image to upload");
       return;
     }
-    updateProfile(formData,currentUser);
+    await updateProfile(formData,currentUser);
   };
 
   const handleDeleteUser = async () => {
     setShowModel(false);
-    deleteUser(currentUser._id);
+    await deleteUser(currentUser._id);
   };
 
   return (

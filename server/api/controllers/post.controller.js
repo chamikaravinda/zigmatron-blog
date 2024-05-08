@@ -1,4 +1,4 @@
-import { errorHandler } from "../utils/response.js";
+import { errorHandler,successHandler } from "../utils/response.js";
 import Post from "../models/post.model.js";
 
 export const createPost = async (req, res, next) => {
@@ -19,7 +19,7 @@ export const createPost = async (req, res, next) => {
 
   try {
     const savedPost = await newPost.save();
-    res.status(201).json(savedPost);
+    res.status(201).json(successHandler(201,"Post created successfully",savedPost));
   } catch (error) {
     next(error);
   }

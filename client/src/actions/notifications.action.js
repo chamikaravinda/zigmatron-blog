@@ -3,6 +3,7 @@ import {
   loadingStop,
   errorNotification,
   successNotification,
+  clearNotification,
 } from "../state/notifications/notificationSlice";
 import { store } from "../state/store";
 
@@ -20,4 +21,8 @@ export const dispatchStartLoading = () => {
 
 export const dispatchStopLoading = () => {
   return store.dispatch(loadingStop());
+};
+
+export const dispatchClearNotifications = () => {
+  return store.dispatch(clearNotification());
 };

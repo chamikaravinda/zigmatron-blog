@@ -2,7 +2,7 @@ import { useSelector } from "react-redux";
 import { Toast, Spinner } from "flowbite-react";
 import { HiCheck, HiBan } from "react-icons/hi";
 import { useDispatch } from "react-redux";
-import { closeNotification } from "../state/notifications/notificationSlice";
+import { clearNotification } from "../state/notifications/notificationSlice";
 
 export default function CommonNotifier() {
   const { loading, error, success } = useSelector(
@@ -12,7 +12,7 @@ export default function CommonNotifier() {
   const dispatch = useDispatch();
 
   const closeMessage = () => {
-    dispatch(closeNotification());
+    dispatch(clearNotification());
   };
 
   return (

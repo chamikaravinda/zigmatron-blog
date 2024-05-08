@@ -30,7 +30,7 @@ const notificationSlice = createSlice({
       state.success = action.payload;
       state.error = null;
     },
-    closeNotification: (state) => {
+    clearNotification: (state) => {
       state.loading = false;
       state.error = null;
       state.success = null;
@@ -43,7 +43,7 @@ export const {
   loadingStop,
   errorNotification,
   successNotification,
-  closeNotification,
+  clearNotification,
 } = notificationSlice.actions;
 
 export default notificationSlice.reducer;

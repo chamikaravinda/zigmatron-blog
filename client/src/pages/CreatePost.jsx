@@ -1,85 +1,48 @@
-import { Alert, FileInput, Select, TextInput } from "flowbite-react";
+import { FileInput, Select, TextInput } from "flowbite-react";
 import { Button } from "flowbite-react";
 import { useState } from "react";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
-import {
-  getDownloadURL,
-  getStorage,
-  ref,
-  uploadBytesResumable,
-} from "firebase/storage";
-import { app } from "../firebase";
 import { CircularProgressbar } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
 import { useNavigate } from "react-router-dom";
+import { createPost, uploadPostImage } from "../actions/post.action";
 
 //TODO : make success and failure messages to just 2 variables
 export default function CreatePost() {
   const [file, setFile] = useState(null);
   const [imageUploadProgress, setImageUploadProgress] = useState(null);
-  const [imageUploadError, setImageUploadError] = useState(null);
   const [formData, setFormData] = useState(null);
-  const [publishError, setPublishError] = useState(null);
 
   const navigate = useNavigate();
 
   const handleUploadImage = async () => {
-    try {
-      if (!file) {
-        setImageUploadError("Please select an image");
-        return;
-      }
-      setImageUploadError(null);
-      const storage = getStorage(app);
-      const fileName = new Date().getTime() + "_" + file.namel;
-      const storageRef = ref(storage, fileName);
-      const uploadTask = uploadBytesResumable(storageRef, file);
-      uploadTask.on(
-        "state_changed",
-        (snapshot) => {
-          const progress =
-            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-          setImageUploadProgress(progress.toFixed(0));
-        },
-        (error) => {
-          setImageUploadError(error);
-          setImageUploadProgress(null);
-        },
-        () => {
-          getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-            setImageUploadProgress(null);
-            setImageUploadError(null);
-            setFormData({ ...formData, image: downloadURL });
-          });
-        }
-      );
-    } catch (error) {
-      setImageUploadError("Image upload failed");
+    setImageUploadProgress(null);
+
+    const inProgress = (progress) => {
+      setImageUploadProgress(progress.toFixed(0));
+    };
+
+    const failure = () => {
       setImageUploadProgress(null);
-      console.log(error);
-    }
+      setFile(null);
+    };
+
+    const success = (downloadURL) => {
+      setFormData({ ...formData, profilePicture: downloadURL });
+      setImageUploadProgress(null);
+      setFile(null);
+    };
+
+    await uploadPostImage(file, inProgress, failure, success);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setPublishError(null);
-    try {
-      const res = await fetch("/api/posts/create", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        setPublishError(data.message);
-      }
-      navigate(`/post/${data.slug}`);
-    } catch (error) {
-      setPublishError(error.message);
-    }
+    const success = (slug) => {
+      navigate(`/post/${slug}`);
+    };
+    await createPost(formData, success);
   };
 
   return (
@@ -135,7 +98,6 @@ export default function CreatePost() {
             )}
           </Button>
         </div>
-        {imageUploadError && <Alert color="failure">{imageUploadError}</Alert>}
         {formData && formData.image && (
           <img
             src={formData.image}
@@ -153,11 +115,6 @@ export default function CreatePost() {
         <Button type="submit" gradientDuoTone="purpleToPink">
           Publish
         </Button>
-        {publishError && (
-          <Alert className="mt-5" color="failure">
-            {publishError}
-          </Alert>
-        )}
       </form>
     </div>
   );

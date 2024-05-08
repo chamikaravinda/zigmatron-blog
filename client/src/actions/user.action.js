@@ -3,6 +3,7 @@ import {
   dispatchStopLoading,
   dispatchStartLoading,
   dispatchSuccess,
+  dispatchClearNotifications,
 } from "./notifications.action";
 import {
   getDownloadURL,
@@ -24,7 +25,7 @@ export const uploadProfilePicture = async (
   failure,
   success
 ) => {
-  dispatchStartLoading();
+  dispatchClearNotifications();
   const storage = getStorage(app);
   const fileName = new Date().getTime + imageFile.name;
   const storageRef = ref(storage, fileName);
@@ -32,7 +33,8 @@ export const uploadProfilePicture = async (
   uploadTask.on(
     "state_changed",
     (snapshot) => {
-      const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100 || 0;
+      const progress =
+        (snapshot.bytesTransferred / snapshot.totalBytes) * 100 || 0;
       inProgress(progress);
     },
     () => {
