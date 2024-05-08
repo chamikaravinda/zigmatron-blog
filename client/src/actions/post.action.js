@@ -68,3 +68,24 @@ export const createPost = async (formData, success) => {
       success(payload.data.slug);
     });
 };
+
+
+export const updatePost = async (formData,currentUserId, success) => {
+  dispatchStartLoading(null);
+  fetch(`/api/posts/update/${formData._id}/${currentUserId}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(formData),
+  })
+    .then((res) => res.json())
+    .then((payload) => {
+      if (!payload.success) {
+        dispatchError(payload.message);
+        return;
+      }
+      dispatchSuccess("Post updated Successfully");
+      success(payload.data.slug);
+    });
+};

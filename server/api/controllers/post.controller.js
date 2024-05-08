@@ -104,7 +104,7 @@ export const updatePost = async (req, res, next) => {
       },
       { new: true }
     );
-    res.status(200).json(updatePost);
+    res.status(200).json(successHandler(201,"Post updated successfully",updatePost));
   } catch (error) {
     next(error);
   }
