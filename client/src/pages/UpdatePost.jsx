@@ -1,4 +1,4 @@
-import { Alert, FileInput, Select, TextInput } from "flowbite-react";
+import { FileInput, Select, TextInput } from "flowbite-react";
 import { Button } from "flowbite-react";
 import { useState, useEffect } from "react";
 import ReactQuill from "react-quill";
@@ -7,41 +7,24 @@ import { CircularProgressbar } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
 import { useNavigate, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { updatePost, uploadPostImage } from "../actions/post.action";
-
+import { getPost, updatePost, uploadPostImage } from "../actions/post.action";
 
 export default function UpdatePost() {
   const [file, setFile] = useState(null);
   const [imageUploadProgress, setImageUploadProgress] = useState(null);
   const [formData, setFormData] = useState({});
-  const [publishError, setPublishError] = useState(null);
   const { postId } = useParams();
   const { currentUser } = useSelector((state) => state.user);
 
   const navigate = useNavigate();
 
   useEffect(() => {
-    try {
-      const fetchPost = async () => {
-        const res = await fetch(`/api/posts/get?postId=${postId}`);
-        const data = await res.json();
-        if (!res.ok) {
-          console.log(data.message);
-          setPublishError(data.message);
-          return;
-        }
-        if (res.ok) {
-          setPublishError(null);
-          setFormData(data.posts[0]);
-        }
-      };
-      fetchPost();
-    } catch (error) {
-      setPublishError(error.message);
-      console.log(error.message);
-    }
+    const success = (post) => {
+      setFormData(post);
+    };
+    getPost(postId, success);
   }, []);
-  
+
   const handleUploadImage = async () => {
     setImageUploadProgress(null);
 
@@ -63,13 +46,12 @@ export default function UpdatePost() {
     await uploadPostImage(file, inProgress, failure, success);
   };
 
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     const success = (slug) => {
       navigate(`/post/${slug}`);
     };
-    await updatePost(formData,currentUser._id, success);
+    await updatePost(formData, currentUser._id, success);
   };
 
   return (
@@ -145,11 +127,6 @@ export default function UpdatePost() {
         <Button type="submit" gradientDuoTone="purpleToPink">
           Update
         </Button>
-        {publishError && (
-          <Alert className="mt-5" color="failure">
-            {publishError}
-          </Alert>
-        )}
       </form>
     </div>
   );

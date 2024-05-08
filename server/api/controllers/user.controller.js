@@ -109,11 +109,11 @@ export const getUsers = async (req, res, next) => {
       createdAt: { $gte: oneMonthAgo },
     });
 
-    res.status(200).json({
+    res.status(200).json(successHandler(200, "Get users is success",{
       users: filteredUsers,
       totalUsers,
       lastMonthUsers,
-    });
+    }));
   } catch (error) {
     next(error);
   }

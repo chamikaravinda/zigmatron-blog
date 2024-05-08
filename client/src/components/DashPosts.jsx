@@ -3,6 +3,7 @@ import { useSelector } from "react-redux";
 import { Table, Modal, Button } from "flowbite-react";
 import { Link } from "react-router-dom";
 import { HiOutlineExclamationCircle } from "react-icons/hi";
+import { deletePost, getPost } from "../actions/post.action";
 
 export default function DashPosts() {
   const [userPosts, setUserPosts] = useState([]);
@@ -13,62 +14,37 @@ export default function DashPosts() {
   const { currentUser } = useSelector((state) => state.user);
 
   useEffect(() => {
-    const fetchPosts = async () => {
-      try {
-        const res = await fetch(`/api/posts/get?userId=${currentUser._id}`);
-        const data = await res.json();
-        if (res.ok) {
-          setUserPosts(data.posts);
-          if (data.posts.length < 9) {
-            setShowMore(false);
-          }
-        }
-      } catch (error) {
-        console.log(error);
+    const success = (posts) => {
+      setUserPosts(posts);
+      if (posts && posts.length < 9) {
+        setShowMore(false);
       }
     };
     if (currentUser.userRole === "ADMIN") {
-      fetchPosts();
+      getPost(currentUser._id, 0, success);
     }
   }, [currentUser]);
 
   const handleShowMore = async () => {
     const startIndex = userPosts.length;
-    try {
-      const res = await fetch(
-        `/api/posts/get?userId=${currentUser._id}&startIndex=${startIndex}`
-      );
-      const data = await res.json();
-      if (res.ok) {
-        setUserPosts((prev) => [...prev, ...data.posts]);
-        if (data.posts.length < 9) {
-          setShowMore(false);
-        }
+    const success = (posts) => {
+      setUserPosts((prev) => [...prev, ...posts]);
+      if (posts && posts.length < 9) {
+        setShowMore(false);
       }
-    } catch (error) {
-      console.log(error);
-    }
+    };
+
+    getPost(currentUser._id, startIndex, success);
   };
 
   const handleDeletePost = async () => {
     setShowModel(false);
-    try {
-      const res = await fetch(
-        `/api/posts/delete/${postIdToDelete}/${currentUser._id}`,
-        { method: "DELETE" }
+    const success = () => {
+      setUserPosts((prev) =>
+        prev.filter((post) => post._id !== postIdToDelete)
       );
-
-      const data = await res.json();
-      if (!res.ok) {
-        console.log(data.message);
-      } else {
-        setUserPosts((prev) =>
-          prev.filter((post) => post._id !== postIdToDelete)
-        );
-      }
-    } catch (error) {
-      console.log(error.message);
-    }
+    };
+    deletePost(postIdToDelete, currentUser._id, success);
   };
 
   return (
@@ -171,7 +147,7 @@ export default function DashPosts() {
                   </h3>
                   <div className="flex justify-center gap-4">
                     <Button color="failure" onClick={handleDeletePost}>
-                      Yes, I'm sure
+                      Yes, I&apos;m sure
                     </Button>
                     <Button onClick={() => setShowModel(false)}>
                       No, Cancel

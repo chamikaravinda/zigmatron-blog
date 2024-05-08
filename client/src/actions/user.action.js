@@ -110,3 +110,17 @@ export const signOut = async () => {
       dispatchError(error.message);
     });
 };
+
+export const getUsers = async (success) => {
+  dispatchStartLoading();
+  await fetch("/api/user/get")
+    .then((res) => res.json())
+    .then((payload) => {
+      if (!payload.success) {
+        dispatchError(payload.message);
+        return;
+      }
+      dispatchStopLoading();
+      success(payload.data.users);
+    });
+};

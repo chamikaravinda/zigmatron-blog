@@ -3,6 +3,7 @@ import { useSelector } from "react-redux";
 import { Table, Modal, Button } from "flowbite-react";
 import { HiOutlineExclamationCircle } from "react-icons/hi";
 import { FaCheck, FaTimes } from "react-icons/fa";
+import { getUsers } from "../actions/user.action";
 
 export default function DashUsers() {
   const [users, setUsers] = useState([]);
@@ -13,22 +14,14 @@ export default function DashUsers() {
   const { currentUser } = useSelector((state) => state.user);
 
   useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const res = await fetch("/api/user/get");
-        const data = await res.json();
-        if (res.ok) {
-          setUsers(data.users);
-          if (data.users.length < 9) {
-            setShowMore(false);
-          }
-        }
-      } catch (error) {
-        console.log(error);
+    const success = (users)=> {
+      setUsers(users);
+      if (users.length < 9) {
+        setShowMore(false);
       }
-    };
+    }
     if (currentUser.userRole === "ADMIN") {
-      fetchUsers();
+      getUsers(success);
     }
   }, [currentUser]);
 
@@ -150,7 +143,7 @@ export default function DashUsers() {
                   </h3>
                   <div className="flex justify-center gap-4">
                     <Button color="failure" onClick={handleDeleteUser}>
-                      Yes, I'm sure
+                      Yes, I&apos;m sure
                     </Button>
                     <Button onClick={() => setShowModel(false)}>
                       No, Cancel

@@ -69,8 +69,33 @@ export const createPost = async (formData, success) => {
     });
 };
 
+export const getPost = async (postId, success) => {
+  await fetch(`/api/posts/get?postId=${postId}`)
+    .then((res) => res.json())
+    .then((payload) => {
+      if (!payload.success) {
+        dispatchError(payload.message);
+        return;
+      }
+      success(payload.data.post[0]);
+    });
+};
 
-export const updatePost = async (formData,currentUserId, success) => {
+export const getPosts = async (userId, startIndex, success) => {
+  dispatchStartLoading();
+  await fetch(`/api/posts/get?userId=${userId}&startIndex=${startIndex}`)
+    .then((res) => res.json())
+    .then((payload) => {
+      if (!payload.success) {
+        dispatchError(payload.message);
+        return;
+      }
+      dispatchStopLoading();
+      success(payload.data.post[0]);
+    });
+};
+
+export const updatePost = async (formData, currentUserId, success) => {
   dispatchStartLoading(null);
   fetch(`/api/posts/update/${formData._id}/${currentUserId}`, {
     method: "PUT",
@@ -86,6 +111,20 @@ export const updatePost = async (formData,currentUserId, success) => {
         return;
       }
       dispatchSuccess("Post updated Successfully");
+      success(payload.data.slug);
+    });
+};
+
+export const deletePost = async (postId, userId, success) => {
+  dispatchStartLoading();
+  await fetch(`/api/posts/delete/${postId}/${userId}`, { method: "DELETE" })
+    .then((res) => res.json())
+    .then((payload) => {
+      if (!payload.success) {
+        dispatchError(payload.message);
+        return;
+      }
+      dispatchSuccess("Post deleted Successfully");
       success(payload.data.slug);
     });
 };

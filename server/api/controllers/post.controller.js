@@ -1,4 +1,4 @@
-import { errorHandler,successHandler } from "../utils/response.js";
+import { errorHandler, successHandler } from "../utils/response.js";
 import Post from "../models/post.model.js";
 
 export const createPost = async (req, res, next) => {
@@ -19,7 +19,9 @@ export const createPost = async (req, res, next) => {
 
   try {
     const savedPost = await newPost.save();
-    res.status(201).json(successHandler(201,"Post created successfully",savedPost));
+    res
+      .status(201)
+      .json(successHandler(201, "Post created successfully", savedPost));
   } catch (error) {
     next(error);
   }
@@ -59,11 +61,13 @@ export const getPosts = async (req, res, next) => {
       createdAt: { $gte: oneMonthAgo },
     });
 
-    res.status(200).json({
-      posts,
-      totalPost,
-      lastMonthPosts,
-    });
+    res.status(200).json(
+      successHandler(200, "Posts retrived successfully", {
+        posts,
+        totalPost,
+        lastMonthPosts,
+      })
+    );
   } catch (error) {
     next(error);
   }
@@ -76,7 +80,7 @@ export const deletePost = async (req, res, next) => {
   }
   try {
     await Post.findByIdAndDelete(req.params.postId);
-    res.status(200).json("The post had been deleted");
+    res.status(200).json(successHandler(200,"The post had been deleted"));
   } catch (error) {
     next(error);
   }
@@ -104,7 +108,9 @@ export const updatePost = async (req, res, next) => {
       },
       { new: true }
     );
-    res.status(200).json(successHandler(201,"Post updated successfully",updatePost));
+    res
+      .status(200)
+      .json(successHandler(201, "Post updated successfully", updatePost));
   } catch (error) {
     next(error);
   }
