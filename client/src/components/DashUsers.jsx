@@ -78,7 +78,7 @@ export default function DashUsers() {
                   </Table.Cell>
                   <Table.Cell>
                     <img
-                      src={user.image}
+                      src={user.profilePicture}
                       alt={user.username}
                       className="w-10 h-10 object-cover bg-gray-500 rounder-full"
                     />

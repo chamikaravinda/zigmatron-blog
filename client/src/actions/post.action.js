@@ -36,8 +36,8 @@ export const uploadPostImage = async (
       const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
       inProgress(progress);
     },
-    (error) => {
-      dispatchError(error);
+    () => {
+      dispatchError("Unexpected Error occured");
       failure();
     },
     () => {
@@ -77,7 +77,7 @@ export const getPost = async (postId, success) => {
         dispatchError(payload.message);
         return;
       }
-      success(payload.data.post[0]);
+      success(payload.data.posts[0]);
     });
 };
 
@@ -91,7 +91,7 @@ export const getPosts = async (userId, startIndex, success) => {
         return;
       }
       dispatchStopLoading();
-      success(payload.data.post[0]);
+      success(payload.data.posts);
     });
 };
 

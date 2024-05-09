@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import { Table, Modal, Button } from "flowbite-react";
 import { Link } from "react-router-dom";
 import { HiOutlineExclamationCircle } from "react-icons/hi";
-import { deletePost, getPost } from "../actions/post.action";
+import { deletePost, getPosts } from "../actions/post.action";
 
 export default function DashPosts() {
   const [userPosts, setUserPosts] = useState([]);
@@ -21,7 +21,7 @@ export default function DashPosts() {
       }
     };
     if (currentUser.userRole === "ADMIN") {
-      getPost(currentUser._id, 0, success);
+      getPosts(currentUser._id, 0, success);
     }
   }, [currentUser]);
 
@@ -34,7 +34,7 @@ export default function DashPosts() {
       }
     };
 
-    getPost(currentUser._id, startIndex, success);
+    getPosts(currentUser._id, startIndex, success);
   };
 
   const handleDeletePost = async () => {

@@ -9,3 +9,7 @@ body {
 .ql-editor {
     font-size:1.05rem
 }
+
+.footer-border {
+    border-radius: 0 !important
+}
