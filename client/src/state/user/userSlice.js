@@ -2,8 +2,6 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   currentUser: null,
-  error: null,
-  loading: false,
 };
 
 const userSlice = createSlice({
@@ -21,8 +19,6 @@ const userSlice = createSlice({
     },
     signOutSuccess: (state) => {
       state.currentUser = null;
-      state.error = null;
-      state.loading = false;
     },
   },
 });

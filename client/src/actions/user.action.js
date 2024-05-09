@@ -111,9 +111,9 @@ export const signOut = async () => {
     });
 };
 
-export const getUsers = async (success) => {
+export const getUsers = async (startIndex, success) => {
   dispatchStartLoading();
-  await fetch("/api/user/get")
+  await fetch(`/api/user/get?startIndex=${startIndex}`)
     .then((res) => res.json())
     .then((payload) => {
       if (!payload.success) {
@@ -122,5 +122,27 @@ export const getUsers = async (success) => {
       }
       dispatchStopLoading();
       success(payload.data.users);
+    })
+    .catch((error) => {
+      dispatchError(error.message);
+    });
+};
+
+export const deleteAnyUser = async (userId, success) => {
+  dispatchStartLoading();
+  await fetch(`/api/user/delete/${userId}`, {
+    method: "DELETE",
+  })
+    .then((res) => res.json())
+    .then((payload) => {
+      if (!payload.success) {
+        dispatchError(payload.message);
+        return;
+      }
+      success();
+      dispatchSuccess(payload.message);
+    })
+    .catch((error) => {
+      dispatchError(error.message);
     });
 };
