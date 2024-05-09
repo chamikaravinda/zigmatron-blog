@@ -40,16 +40,15 @@ export default function DashSidebar() {
           </Link>
           {currentUser.userRole === "ADMIN" && (
             <>
-              <Link to="/dashboard?tab=posts">
+              <Sidebar.Collapse icon={HiDocumentText} label="Posts">
                 <Sidebar.Item
+                  href="/dashboard?tab=posts"
                   active={tab === "posts"}
-                  icon={HiDocumentText}
-                  labelColor="dark"
-                  as="div"
                 >
-                  Post
+                  All posts
                 </Sidebar.Item>
-              </Link>
+                <Sidebar.Item href="/create-post">Create Post</Sidebar.Item>
+              </Sidebar.Collapse>
               <Link to="/dashboard?tab=users">
                 <Sidebar.Item
                   active={tab === "users"}

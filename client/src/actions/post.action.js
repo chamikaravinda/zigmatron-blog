@@ -21,7 +21,7 @@ export const uploadPostImage = async (
 ) => {
   dispatchClearNotifications();
   if (!imageFile) {
-    dispatchError("Please select and Image");
+    dispatchError("Please select an image");
     return;
   }
 
@@ -125,6 +125,6 @@ export const deletePost = async (postId, userId, success) => {
         return;
       }
       dispatchSuccess("Post deleted Successfully");
-      success(payload.data.slug);
+      success();
     });
 };

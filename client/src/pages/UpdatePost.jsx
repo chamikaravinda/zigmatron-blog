@@ -38,7 +38,7 @@ export default function UpdatePost() {
     };
 
     const success = (downloadURL) => {
-      setFormData({ ...formData, profilePicture: downloadURL });
+      setFormData({ ...formData, image: downloadURL });
       setImageUploadProgress(null);
       setFile(null);
     };

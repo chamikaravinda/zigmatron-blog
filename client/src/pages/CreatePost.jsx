@@ -8,7 +8,6 @@ import "react-circular-progressbar/dist/styles.css";
 import { useNavigate } from "react-router-dom";
 import { createPost, uploadPostImage } from "../actions/post.action";
 
-//TODO : make success and failure messages to just 2 variables
 export default function CreatePost() {
   const [file, setFile] = useState(null);
   const [imageUploadProgress, setImageUploadProgress] = useState(null);
@@ -29,7 +28,7 @@ export default function CreatePost() {
     };
 
     const success = (downloadURL) => {
-      setFormData({ ...formData, profilePicture: downloadURL });
+      setFormData({ ...formData, image: downloadURL });
       setImageUploadProgress(null);
       setFile(null);
     };
