@@ -1,113 +1,57 @@
-import { Alert, FileInput, Select, TextInput } from "flowbite-react";
+import { FileInput, Select, TextInput } from "flowbite-react";
 import { Button } from "flowbite-react";
 import { useState, useEffect } from "react";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
-import {
-  getDownloadURL,
-  getStorage,
-  ref,
-  uploadBytesResumable,
-} from "firebase/storage";
-import { app } from "../firebase";
 import { CircularProgressbar } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
 import { useNavigate, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
+import { getPost, updatePost, uploadPostImage } from "../actions/post.action";
 
 export default function UpdatePost() {
   const [file, setFile] = useState(null);
   const [imageUploadProgress, setImageUploadProgress] = useState(null);
-  const [imageUploadError, setImageUploadError] = useState(null);
   const [formData, setFormData] = useState({});
-  const [publishError, setPublishError] = useState(null);
   const { postId } = useParams();
   const { currentUser } = useSelector((state) => state.user);
 
   const navigate = useNavigate();
 
-  //TODO : make success and failure messages to just 2 variables
   useEffect(() => {
-    try {
-      const fetchPost = async () => {
-        const res = await fetch(`/api/posts/get?postId=${postId}`);
-        const data = await res.json();
-        if (!res.ok) {
-          console.log(data.message);
-          setPublishError(data.message);
-          return;
-        }
-        if (res.ok) {
-          setPublishError(null);
-          setFormData(data.posts[0]);
-        }
-      };
-      fetchPost();
-    } catch (error) {
-      setPublishError(error.message);
-      console.log(error.message);
-    }
+    const success = (post) => {
+      setFormData(post);
+    };
+    getPost(postId, success);
   }, []);
 
   const handleUploadImage = async () => {
-    try {
-      if (!file) {
-        setImageUploadError("Please select an image");
-        return;
-      }
-      setImageUploadError(null);
-      const storage = getStorage(app);
-      const fileName = new Date().getTime() + "_" + file.namel;
-      const storageRef = ref(storage, fileName);
-      const uploadTask = uploadBytesResumable(storageRef, file);
-      uploadTask.on(
-        "state_changed",
-        (snapshot) => {
-          const progress =
-            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-          setImageUploadProgress(progress.toFixed(0));
-        },
-        (error) => {
-          setImageUploadError(error);
-          setImageUploadProgress(null);
-        },
-        () => {
-          getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-            setImageUploadProgress(null);
-            setImageUploadError(null);
-            setFormData({ ...formData, image: downloadURL });
-          });
-        }
-      );
-    } catch (error) {
-      setImageUploadError("Image upload failed");
+    setImageUploadProgress(null);
+
+    const inProgress = (progress) => {
+      setImageUploadProgress(progress.toFixed(0));
+    };
+
+    const failure = () => {
       setImageUploadProgress(null);
-      console.log(error);
-    }
+      setFile(null);
+    };
+
+    const success = (downloadURL) => {
+      setFormData({ ...formData, image: downloadURL });
+      setImageUploadProgress(null);
+      setFile(null);
+    };
+
+    await uploadPostImage(file, inProgress, failure, success);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setPublishError(null);
-    try {
-      const res = await fetch(
-        `/api/posts/update/${formData._id}/${currentUser._id}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(formData),
-        }
-      );
-      const data = await res.json();
-      if (!res.ok) {
-        setPublishError(data.message);
-      }
-      navigate(`/post/${data.slug}`);
-    } catch (error) {
-      setPublishError(error.message);
-    }
+    const success = (slug) => {
+      navigate(`/post/${slug}`);
+    };
+    await updatePost(formData, currentUser._id, success);
   };
 
   return (
@@ -165,7 +109,6 @@ export default function UpdatePost() {
             )}
           </Button>
         </div>
-        {imageUploadError && <Alert color="failure">{imageUploadError}</Alert>}
         {formData && formData.image && (
           <img
             src={formData.image}
@@ -184,11 +127,6 @@ export default function UpdatePost() {
         <Button type="submit" gradientDuoTone="purpleToPink">
           Update
         </Button>
-        {publishError && (
-          <Alert className="mt-5" color="failure">
-            {publishError}
-          </Alert>
-        )}
       </form>
     </div>
   );

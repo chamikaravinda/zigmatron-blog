@@ -10,11 +10,13 @@ import Footer from "./components/Footer";
 import { PrivateRoute, OnlyAdminPrivateRoute } from "./components/PrivateRoute";
 import CreatePost from "./pages/CreatePost";
 import UpdatePost from "./pages/UpdatePost";
+import CommonNotifier from "./components/CommonNotifier";
 
 export default function App() {
   return (
     <BrowserRouter>
       <Header />
+      <CommonNotifier/>
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/about" element={<About />} />

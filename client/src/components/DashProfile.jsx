@@ -1,41 +1,27 @@
-import { Alert, Button, Modal, TextInput } from "flowbite-react";
+import { Button, Modal, TextInput } from "flowbite-react";
 import { useEffect, useRef, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import {
-  getDownloadURL,
-  getStorage,
-  uploadBytesResumable,
-  ref,
-} from "firebase/storage";
 import { HiOutlineExclamationCircle } from "react-icons/hi";
 import { CircularProgressbar } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
-import { app } from "../firebase";
+import { dispatchError } from "../actions/notifications.action.js";
 import {
-  updateStart,
-  updateFailure,
-  updateSuccess,
-  deleteUserStart,
-  deleteUserFailure,
-  deleteUserSuccess,
-  signOutSuccess,
-} from "../state/user/userSlice";
+  uploadProfilePicture,
+  updateProfile,
+  deleteUser,
+  signOut,
+} from "../actions/user.action.js";
 
 export default function DashProfile() {
-  const { currentUser, error, loading } = useSelector((state) => state.user);
+  const { currentUser } = useSelector((state) => state.user);
   const [imageFile, setImageFile] = useState(null);
   const [imageFileUrl, setImageFileUrl] = useState(null);
   const [imageFileUploadProgress, setImageFileUploadProgress] = useState(null);
-  const [imageFileUploadError, setImageFileUploadError] = useState(null);
-  const [imageFileUploading, setImageFileUploading] = useState(false);
-  const [updateUserSuccess, setUpdateUserSuccess] = useState(null);
-  const [updateUserError, setUpdateUserError] = useState(null);
   const [showModle, setShowModel] = useState(null);
   const [formData, setFormData] = useState({});
 
   const filePickerRef = useRef();
-  const dispatch = useDispatch();
 
   useEffect(() => {
     if (imageFile) {
@@ -44,37 +30,26 @@ export default function DashProfile() {
   }, [imageFile]);
 
   const uploadImage = async () => {
-    setImageFileUploading(true);
-    setImageFileUploadError(null);
-    const storage = getStorage(app);
-    const fileName = new Date().getTime + imageFile.name;
-    const storageRef = ref(storage, fileName);
-    const uploadTask = uploadBytesResumable(storageRef, imageFile);
-    uploadTask.on(
-      "state_changed",
-      (snapshot) => {
-        const progress =
-          (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-        setImageFileUploadProgress(progress.toFixed(0));
-      },
-      () => {
-        setImageFileUploadError(
-          "Could not upload image(File must be less than 2MB"
-        );
-        setImageFileUploadProgress(null);
-        setImageFile(null);
-        setImageFileUrl(null);
-        setImageFileUploading(false);
-      },
-      () => {
-        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-          setImageFileUrl(downloadURL);
-          setFormData({ ...formData, profilePicture: downloadURL });
-          setImageFileUploadError(false);
-          setImageFileUploading(false);
-        });
-      }
-    );
+    setImageFileUploadProgress(null);
+
+    const inProgress = (progress) => {
+      setImageFileUploadProgress(progress.toFixed(0));
+    };
+
+    const failure = () => {
+      setImageFileUploadProgress(null);
+      setImageFile(null);
+      setImageFileUrl(null);
+    };
+
+    const success = (downloadURL) => {
+      setImageFileUrl(downloadURL);
+      setFormData({ ...formData, profilePicture: downloadURL });
+      setImageFileUploadProgress(null);
+      setImageFile(null);
+    };
+
+    await uploadProfilePicture(imageFile, inProgress, failure, success);
   };
 
   const handleImageChange = (e) => {
@@ -97,71 +72,20 @@ export default function DashProfile() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setUpdateUserError(null);
-    setUpdateUserSuccess(null);
     if (Object.keys(formData).length === 0) {
-      setUpdateUserError("No changes made");
+      dispatchError("No changes made");
       return;
     }
-    if (imageFileUploading) {
-      setUpdateUserError("Please wait for image to upload");
+    if (imageFileUploadProgress) {
+      dispatchError("Please wait for image to upload");
       return;
     }
-    try {
-      dispatch(updateStart());
-      const res = await fetch(`/api/user/update/${currentUser._id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        dispatch(updateFailure(data.message));
-        setUpdateUserError(data.message);
-      } else {
-        dispatch(updateSuccess(data));
-        setUpdateUserSuccess("User profile updated Successfully");
-      }
-    } catch (error) {
-      dispatch(updateFailure(error.message));
-      setUpdateUserError(error.message);
-    }
+    await updateProfile(formData,currentUser);
   };
 
   const handleDeleteUser = async () => {
     setShowModel(false);
-    try {
-      dispatch(deleteUserStart());
-      const res = await fetch(`api/user/delete/${currentUser._id}`, {
-        method: "DELETE",
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        dispatch(deleteUserFailure(data.message));
-      } else {
-        dispatch(deleteUserSuccess(data));
-      }
-    } catch (error) {
-      dispatch(deleteUserFailure(error.message));
-    }
-  };
-
-  const handleSignOut = async () => {
-    try {
-      const res = await fetch("/api/user/signout", {
-        method: "POST",
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        console.log(data.message);
-      } else {
-        dispatch(signOutSuccess());
-      }
-    } catch (error) {
-      console.log(error.message);
-    }
+    await deleteUser(currentUser._id);
   };
 
   return (
@@ -207,9 +131,6 @@ export default function DashProfile() {
             ${imageFileUploadProgress && imageFileUploadProgress < 100 && "opacity-60"} `}
           />
         </div>
-        {imageFileUploadError && (
-          <Alert color="failure">{imageFileUploadError}</Alert>
-        )}
         <TextInput
           type="text"
           id="username"
@@ -234,9 +155,9 @@ export default function DashProfile() {
           type="submit"
           gradientDuoTone="purpleToBlue"
           outline
-          disabled={loading || imageFileUploading}
+          disabled={imageFileUploadProgress}
         >
-          {loading || imageFileUploading ? "Loading..." : "Update"}
+          {imageFileUploadProgress ? "Loading..." : "Update"}
         </Button>
         {currentUser.userRole === "ADMIN" && (
           <Link to={"/create-post"}>
@@ -254,25 +175,10 @@ export default function DashProfile() {
         <span className="cursor-pointer" onClick={() => setShowModel(true)}>
           Delete Account
         </span>
-        <span className="cursor-pointer" onClick={handleSignOut}>
+        <span className="cursor-pointer" onClick={signOut}>
           Sign out
         </span>
       </div>
-      {updateUserSuccess && (
-        <Alert color="success" className="mt-5">
-          {updateUserSuccess}
-        </Alert>
-      )}
-      {updateUserError && (
-        <Alert color="failure" className="mt-5">
-          {updateUserError}
-        </Alert>
-      )}
-      {error && (
-        <Alert color="failure" className="mt-5">
-          {error}
-        </Alert>
-      )}
       <Modal
         show={showModle}
         onClose={() => {
@@ -290,7 +196,7 @@ export default function DashProfile() {
               </h3>
               <div className="flex justify-center gap-4">
                 <Button color="failure" onClick={handleDeleteUser}>
-                  Yes, I'm sure
+                  Yes, I&apos;m sure
                 </Button>
                 <Button onClick={() => setShowModel(false)}>No, Cancel</Button>
               </div>

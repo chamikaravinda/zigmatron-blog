@@ -1,10 +1,9 @@
 import User from "../models/user.model.js";
 import bcrypt from "bcryptjs";
-import { errorHandler } from "../utils/error.js";
+import { errorHandler, successHandler } from "../utils/response.js";
 import jwt from "jsonwebtoken";
-import Post from "../models/post.model.js";
 
-export const signup = async (req, res, next) => {
+export const signUp = async (req, res, next) => {
   const { username, email, password } = req.body;
   if (
     !username ||
@@ -27,7 +26,7 @@ export const signup = async (req, res, next) => {
 
   try {
     await newUser.save();
-    res.json("Signup successful");
+    res.status(200).json(successHandler(200, "Signup successful"));
   } catch (error) {
     next(error);
   }
@@ -70,7 +69,7 @@ export const signIn = async (req, res, next) => {
       .cookie("access_token", token, {
         httpOnly: true,
       })
-      .json(rest);
+      .json(successHandler(200, "Sign in success", rest));
   } catch (error) {
     return next(error);
   }
