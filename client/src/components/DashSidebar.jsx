@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { useState } from "react";
+import { Link } from "react-router-dom";
 import { Sidebar } from "flowbite-react";
+import PropTypes from "prop-types";
 import {
   HiUser,
   HiArrowSmRight,
@@ -10,18 +11,9 @@ import {
 import { useSelector } from "react-redux";
 import { signOut } from "../actions/user.action";
 
-export default function DashSidebar() {
-  const location = useLocation();
-  const [tab, setTab] = useState("");
+export default function DashSidebar(props) {
   const { currentUser } = useSelector((state) => state.user);
-
-  useEffect(() => {
-    const urlParams = new URLSearchParams(location.search);
-    const tabFromUrl = urlParams.get("tab");
-    if (tabFromUrl) {
-      setTab(tabFromUrl);
-    }
-  }, [location.search]);
+  const { tab } = useState(props.tab);
 
   return (
     <Sidebar className="w-full md:w-56">
@@ -73,3 +65,7 @@ export default function DashSidebar() {
     </Sidebar>
   );
 }
+
+DashSidebar.propTypes = {
+  tab: PropTypes.any.isRequired,
+};

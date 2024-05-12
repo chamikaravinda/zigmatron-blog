@@ -70,6 +70,7 @@ export const createPost = async (formData, success) => {
 };
 
 export const getPost = async (postId, success) => {
+  dispatchStartLoading();
   await fetch(`/api/posts/get?postId=${postId}`)
     .then((res) => res.json())
     .then((payload) => {
@@ -77,9 +78,25 @@ export const getPost = async (postId, success) => {
         dispatchError(payload.message);
         return;
       }
+      dispatchStopLoading();
       success(payload.data.posts[0]);
     });
 };
+
+export const getPostBySlug = async (slug, success) => {
+  dispatchStartLoading();
+  await fetch(`/api/posts/get?slug=${slug}`)
+    .then((res) => res.json())
+    .then((payload) => {
+      if (!payload.success) {
+        dispatchError(payload.message);
+        return;
+      }
+      dispatchStopLoading();
+      success(payload.data.posts[0]);
+    });
+};
+
 
 export const getPosts = async (userId, startIndex, success) => {
   dispatchStartLoading();
