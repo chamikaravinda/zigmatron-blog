@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { getPostBySlug } from "../actions/post.action";
 import { Button } from "flowbite-react";
+import ActionBanner from "../components/ActionBanner";
 
 export default function PostPage() {
   const { slug } = useParams();
@@ -59,6 +60,9 @@ export default function PostPage() {
         className="p-3 max-w-4xl mx-auto w-full post-content"
         dangerouslySetInnerHTML={{ __html: post.content }}
       ></div>
+      <div className="max-w-4xl mx-auto w-full">
+        <ActionBanner />
+      </div>
     </main>
   );
 }
