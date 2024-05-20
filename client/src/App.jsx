@@ -12,12 +12,14 @@ import CreatePost from "./pages/CreatePost";
 import UpdatePost from "./pages/UpdatePost";
 import CommonNotifier from "./components/CommonNotifier";
 import PostPage from "./pages/PostPage";
+import ScrollToTop from "./components/ScrollToTop";
 
 export default function App() {
   return (
     <BrowserRouter>
+      <ScrollToTop />
       <Header />
-      <CommonNotifier/>
+      <CommonNotifier />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/about" element={<About />} />

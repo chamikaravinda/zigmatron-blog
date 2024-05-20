@@ -3,6 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import { getPostBySlug } from "../actions/post.action";
 import { Button } from "flowbite-react";
 import ActionBanner from "../components/ActionBanner";
+import CommentSection from "../components/CommentSection";
 
 export default function PostPage() {
   const { slug } = useParams();
@@ -63,6 +64,7 @@ export default function PostPage() {
       <div className="max-w-4xl mx-auto w-full">
         <ActionBanner />
       </div>
+      <CommentSection postId={post._id}/>
     </main>
   );
 }
