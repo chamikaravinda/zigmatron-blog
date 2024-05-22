@@ -4,7 +4,7 @@ import {
   dispatchStartLoading,
 } from "./notifications.action";
 
-export const createComment = (comment,success) => {
+export const createComment = (comment, success) => {
   dispatchStartLoading(null);
   fetch("/api/comment/create", {
     method: "POST",
@@ -21,5 +21,17 @@ export const createComment = (comment,success) => {
       }
       dispatchSuccess("Comment added Successfully");
       success(payload.data.slug);
+    });
+};
+
+export const getPostComments = async (postId, success) => {
+  await fetch(`/api/comment/get-comments/${postId}`)
+    .then((res) => res.json())
+    .then((payload) => {
+      if (!payload.success) {
+        dispatchError(payload.message);
+        return;
+      }
+      success(payload.data);
     });
 };
