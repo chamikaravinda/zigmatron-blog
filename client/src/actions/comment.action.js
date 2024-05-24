@@ -35,3 +35,17 @@ export const getPostComments = async (postId, success) => {
       success(payload.data);
     });
 };
+
+export const toggleLike = async (commentId, success) => {
+  await fetch(`/api/comment/like-comment/${commentId}`, {
+    method: "PUT",
+  })
+    .then((res) => res.json())
+    .then((payload) => {
+      if (!payload.success) {
+        dispatchError(payload.message);
+        return;
+      }
+      success();
+    });
+};

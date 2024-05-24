@@ -94,9 +94,11 @@ export const getPostBySlug = async (slug, success) => {
       }
       dispatchStopLoading();
       success(payload.data.posts[0]);
+    })
+    .catch((error) => {
+      dispatchError(error);
     });
 };
-
 
 export const getPosts = async (userId, startIndex, success) => {
   dispatchStartLoading();

@@ -7,6 +7,7 @@ import {
   BsGithub,
   BsDribbble,
 } from "react-icons/bs";
+
 export default function FooterComponent() {
   return (
     <Footer

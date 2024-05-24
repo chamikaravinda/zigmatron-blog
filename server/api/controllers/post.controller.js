@@ -62,7 +62,7 @@ export const getPosts = async (req, res, next) => {
     });
 
     res.status(200).json(
-      successHandler(200, "Posts retrived successfully", {
+      successHandler(200, "Posts retrieved successfully", {
         posts,
         totalPost,
         lastMonthPosts,
@@ -80,7 +80,7 @@ export const deletePost = async (req, res, next) => {
   }
   try {
     await Post.findByIdAndDelete(req.params.postId);
-    res.status(200).json(successHandler(200,"The post had been deleted"));
+    res.status(200).json(successHandler(200, "The post had been deleted"));
   } catch (error) {
     next(error);
   }
