@@ -76,12 +76,14 @@ export const editComment = async (req, res, next) => {
       return next(errorHandler(404, "Comment not found"));
     }
 
-    if (comment.user._id.toString() !== req.user.id && !req.user.userRole === "ADMIN") {
+    if (
+      comment.user._id.toString() !== req.user.id &&
+      !req.user.userRole === "ADMIN"
+    ) {
       return next(
         errorHandler(403, "You are not allowed to edit this comment")
       );
     }
-
 
     const editedComment = await Comment.findByIdAndUpdate(
       req.params.commentId,
@@ -93,6 +95,29 @@ export const editComment = async (req, res, next) => {
     res
       .status(200)
       .json(successHandler(200, "Comment updated successfully", editComment));
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const deleteComment = async (req, res, next) => {
+  try {
+    const comment = await Comment.findById(req.params.commentId);
+    if (!comment) {
+      return next(errorHandler(404, "Comment not found"));
+    }
+
+    if (
+      comment.user._id.toString() !== req.user.id &&
+      !req.user.userRole === "ADMIN"
+    ) {
+      return next(
+        errorHandler(403, "You are not allowed to edit this comment")
+      );
+    }
+
+    await Comment.findByIdAndDelete(req.params.commentId);
+    res.status(200).json(successHandler(200, "Comment has been deleted0"));
   } catch (error) {
     next(error);
   }

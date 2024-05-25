@@ -2,7 +2,11 @@ import { Button, Textarea } from "flowbite-react";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import { createComment, getPostComments } from "../actions/comment.action";
+import {
+  createComment,
+  deleteComment,
+  getPostComments,
+} from "../actions/comment.action";
 import PropTypes from "prop-types";
 import Comment from "./Comment";
 
@@ -40,6 +44,18 @@ export default function CommentSection(props) {
       getPostComments(postId, getPostCommentsSuccess);
     };
     createComment(newComment, createCommentSuccess);
+  };
+
+  const handleDeleteComment = async (commentId) => {
+    if (!currentUser) {
+      return;
+    }
+
+    const deleteCommentSuccess = () => {
+      setComments(comments.filter((comment) => comment._id !== commentId));
+    };
+
+    deleteComment(commentId, deleteCommentSuccess);
   };
 
   return (
@@ -99,7 +115,11 @@ export default function CommentSection(props) {
             </div>
           </div>
           {comments.map((comment) => (
-            <Comment key={comment._id} comment={comment} />
+            <Comment
+              key={comment._id}
+              comment={comment}
+              deleteComment={handleDeleteComment}
+            />
           ))}
         </>
       ) : (

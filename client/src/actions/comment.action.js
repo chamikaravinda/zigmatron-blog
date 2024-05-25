@@ -71,3 +71,19 @@ export const editComment = (comment, success) => {
       success();
     });
 };
+
+export const deleteComment = (commentId, success) => {
+  dispatchStartLoading(null);
+  fetch(`/api/comment/delete-comment/${commentId}`, {
+    method: "DELETE",
+  })
+    .then((res) => res.json())
+    .then((payload) => {
+      if (!payload.success) {
+        dispatchError(payload.message);
+        return;
+      }
+      dispatchSuccess("Comment deleted Successfully");
+      success();
+    });
+};
