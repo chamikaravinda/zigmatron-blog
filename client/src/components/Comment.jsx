@@ -3,12 +3,15 @@ import moment from "moment";
 import { FaThumbsUp } from "react-icons/fa";
 import { useSelector } from "react-redux";
 import { useState, useEffect } from "react";
-import { toggleLike } from "../actions/comment.action";
+import { editComment, toggleLike } from "../actions/comment.action";
+import { Button, Textarea } from "flowbite-react";
 
 export default function Comment(props) {
   const { currentUser } = useSelector((state) => state.user);
   const commentFromProp = props.comment;
   const [comment, setComment] = useState({});
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedContent, setEditedContent] = useState(comment.content);
 
   useEffect(() => {
     setComment(commentFromProp);
@@ -44,13 +47,36 @@ export default function Comment(props) {
     toggleLike(comment._id, success);
   };
 
+  const toggleEdit = () => {
+    setIsEditing(true);
+    setEditedContent(comment.content);
+  };
+
+  const handleEdit = () => {
+    const commentToUpdate = {
+      ...comment,
+      content: editedContent,
+    };
+    const success = () => {
+      const editedComment = {
+        ...comment,
+        content: editedContent,
+      };
+
+      setIsEditing(false);
+      setComment(editedComment);
+    };
+
+    editComment(commentToUpdate, success);
+  };
+
   if (!comment.user) {
     <p>Loading comment data...</p>;
     return;
   }
 
   return (
-    <div id={comment._id} className="p-4 border-b dark:border-gray-600">
+    <div id={comment._id} className="p-4 border-t dark:border-gray-600">
       <div className="flex text-sm">
         <div className="flex-shrink-0 mr-3">
           <img
@@ -69,10 +95,40 @@ export default function Comment(props) {
           </div>
         </div>
       </div>
-      <div className="flex-2">
-        <p className="pb-2">{comment.content}</p>
-      </div>
-      <div className="flex items-center">
+      {isEditing ? (
+        <>
+          <Textarea
+            className="my-2"
+            value={editedContent}
+            onChange={(e) => setEditedContent(e.target.value)}
+          />
+          <div className="flex justify-end gap-2 text-xm">
+            <Button
+              type="button"
+              size="sm"
+              gradientDuoTone="purpleToBlue"
+              onClick={handleEdit}
+            >
+              Save
+            </Button>
+            <Button
+              type="button"
+              size="sm"
+              gradientDuoTone="purpleToBlue"
+              outline
+              onClick={() => setIsEditing(false)}
+            >
+              Cancel
+            </Button>
+          </div>
+        </>
+      ) : (
+        <div className="flex-2">
+          <p className="pb-2">{comment.content}</p>
+        </div>
+      )}
+
+      <div className="flex items-center pt-2 text-xs max-w-fit gap-2">
         <button
           type="button"
           onClick={onClickLikeButton}
@@ -93,6 +149,17 @@ export default function Comment(props) {
             {parseInt(comment.numberOfLikes) === 1 ? "like" : "likes"}
           </p>
         )}
+        {currentUser &&
+          (currentUser._id === comment.user._id ||
+            currentUser.userRole === "ADMIN") && (
+            <button
+              type="button"
+              onClick={toggleEdit}
+              className="text-gray-400 hover:text-red-500"
+            >
+              Edit
+            </button>
+          )}
       </div>
     </div>
   );

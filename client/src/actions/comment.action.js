@@ -49,3 +49,25 @@ export const toggleLike = async (commentId, success) => {
       success();
     });
 };
+
+export const editComment = (comment, success) => {
+  dispatchStartLoading(null);
+  fetch(`/api/comment/edit-comment/${comment._id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      content: comment.content,
+    }),
+  })
+    .then((res) => res.json())
+    .then((payload) => {
+      if (!payload.success) {
+        dispatchError(payload.message);
+        return;
+      }
+      dispatchSuccess("Comment edited Successfully");
+      success();
+    });
+};
