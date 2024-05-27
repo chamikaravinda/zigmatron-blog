@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { Table, Modal, Button } from "flowbite-react";
-import { HiOutlineExclamationCircle } from "react-icons/hi";
+import { Table } from "flowbite-react";
 import { FaCheck, FaTimes } from "react-icons/fa";
 import { getUsers, deleteAnyUser } from "../actions/user.action";
+import TwoOptionModel from "./TwoOptionModel";
 
 export default function DashUsers() {
   const [users, setUsers] = useState([]);
@@ -115,33 +115,19 @@ export default function DashUsers() {
               Show More
             </button>
           )}
-          <Modal
-            show={showModel}
+          <TwoOptionModel
+            showModel={showModel}
             onClose={() => {
               setShowModel(false);
             }}
-            popup
-            size="md"
-          >
-            <Modal.Header>
-              <Modal.Body>
-                <div className="text-center">
-                  <HiOutlineExclamationCircle className="h-14 w-14 text-gray-400 dark:text-gray-200 mb-4 mx-auto" />
-                  <h3 className="mb-5 text-lg text-gray-500 dark:text-gray-400">
-                    Are you sure you want to delete this user ?
-                  </h3>
-                  <div className="flex justify-center gap-4">
-                    <Button color="failure" onClick={handleDeleteUser}>
-                      Yes, I&apos;m sure
-                    </Button>
-                    <Button onClick={() => setShowModel(false)}>
-                      No, Cancel
-                    </Button>
-                  </div>
-                </div>
-              </Modal.Body>
-            </Modal.Header>
-          </Modal>
+            ModelMessage="Are you sure you want to delete this user"
+            AcceptBtnText="Yes,I'm sure"
+            CancelBtnText="No,Cancel"
+            AcceptAction={handleDeleteUser}
+            CancelAction={() => {
+              setShowModel(false);
+            }}
+          />
         </>
       ) : (
         <p> You have no users yet </p>

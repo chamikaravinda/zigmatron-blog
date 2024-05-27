@@ -1,8 +1,7 @@
-import { Button, Modal, TextInput } from "flowbite-react";
+import { Button, TextInput } from "flowbite-react";
 import { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import { HiOutlineExclamationCircle } from "react-icons/hi";
 import { CircularProgressbar } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
 import { dispatchError } from "../actions/notifications.action.js";
@@ -12,13 +11,14 @@ import {
   deleteUser,
   signOut,
 } from "../actions/user.action.js";
+import TwoOptionModel from "./TwoOptionModel";
 
 export default function DashProfile() {
   const { currentUser } = useSelector((state) => state.user);
   const [imageFile, setImageFile] = useState(null);
   const [imageFileUrl, setImageFileUrl] = useState(null);
   const [imageFileUploadProgress, setImageFileUploadProgress] = useState(null);
-  const [showModle, setShowModel] = useState(null);
+  const [showModel, setShowModel] = useState(null);
   const [formData, setFormData] = useState({});
 
   const filePickerRef = useRef();
@@ -80,7 +80,7 @@ export default function DashProfile() {
       dispatchError("Please wait for image to upload");
       return;
     }
-    await updateProfile(formData,currentUser);
+    await updateProfile(formData, currentUser);
   };
 
   const handleDeleteUser = async () => {
@@ -179,31 +179,19 @@ export default function DashProfile() {
           Sign out
         </span>
       </div>
-      <Modal
-        show={showModle}
+      <TwoOptionModel
+        showModel={showModel}
         onClose={() => {
           setShowModel(false);
         }}
-        popup
-        size="md"
-      >
-        <Modal.Header>
-          <Modal.Body>
-            <div className="text-center">
-              <HiOutlineExclamationCircle className="h-14 w-14 text-gray-400 dark:text-gray-200 mb-4 mx-auto" />
-              <h3 className="mb-5 text-lg text-gray-500 dark:text-gray-400">
-                Are you sure you want to delete your account ?
-              </h3>
-              <div className="flex justify-center gap-4">
-                <Button color="failure" onClick={handleDeleteUser}>
-                  Yes, I&apos;m sure
-                </Button>
-                <Button onClick={() => setShowModel(false)}>No, Cancel</Button>
-              </div>
-            </div>
-          </Modal.Body>
-        </Modal.Header>
-      </Modal>
+        ModelMessage="Are you sure you want to delete your account ?"
+        AcceptBtnText="Yes,I'm sure"
+        CancelBtnText="No,Cancel"
+        AcceptAction={handleDeleteUser}
+        CancelAction={() => {
+          setShowModel(false);
+        }}
+      />
     </div>
   );
 }

@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { Table, Modal, Button } from "flowbite-react";
+import { Table } from "flowbite-react";
 import { Link } from "react-router-dom";
-import { HiOutlineExclamationCircle } from "react-icons/hi";
 import { deletePost, getPosts } from "../actions/post.action";
+import TwoOptionModel from "./TwoOptionModel";
 
 export default function DashPosts() {
   const [userPosts, setUserPosts] = useState([]);
@@ -130,33 +130,19 @@ export default function DashPosts() {
               Show More
             </button>
           )}
-          <Modal
-            show={showModel}
+          <TwoOptionModel
+            showModel={showModel}
             onClose={() => {
               setShowModel(false);
             }}
-            popup
-            size="md"
-          >
-            <Modal.Header>
-              <Modal.Body>
-                <div className="text-center">
-                  <HiOutlineExclamationCircle className="h-14 w-14 text-gray-400 dark:text-gray-200 mb-4 mx-auto" />
-                  <h3 className="mb-5 text-lg text-gray-500 dark:text-gray-400">
-                    Are you sure you want to delete this post ?
-                  </h3>
-                  <div className="flex justify-center gap-4">
-                    <Button color="failure" onClick={handleDeletePost}>
-                      Yes, I&apos;m sure
-                    </Button>
-                    <Button onClick={() => setShowModel(false)}>
-                      No, Cancel
-                    </Button>
-                  </div>
-                </div>
-              </Modal.Body>
-            </Modal.Header>
-          </Modal>
+            ModelMessage="Are you sure you want to delete this post"
+            AcceptBtnText="Yes,I'm sure"
+            CancelBtnText="No,Cancel"
+            AcceptAction={handleDeletePost}
+            CancelAction={() => {
+              setShowModel(false);
+            }}
+          />
         </>
       ) : (
         <p> You have no post yet </p>
