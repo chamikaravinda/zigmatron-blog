@@ -1,13 +1,15 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { getPostBySlug } from "../actions/post.action";
+import { getPostBySlug, getRecentPosts } from "../actions/post.action";
 import { Button } from "flowbite-react";
 import ActionBanner from "../components/ActionBanner";
 import CommentSection from "../components/CommentSection";
+import PostCard from "../components/PostCard";
 
 export default function PostPage() {
   const { slug } = useParams();
   const [post, setPost] = useState();
+  const [recentPost, setRecentPost] = useState([]);
 
   useEffect(() => {
     const success = (post) => {
@@ -15,6 +17,13 @@ export default function PostPage() {
     };
     getPostBySlug(slug, success);
   }, [slug]);
+
+  useEffect(() => {
+    const success = (post) => {
+      setRecentPost(post);
+    };
+    getRecentPosts(3, success);
+  }, []);
 
   if (!post) {
     return (
@@ -64,7 +73,16 @@ export default function PostPage() {
       <div className="max-w-4xl mx-auto w-full">
         <ActionBanner />
       </div>
-      <CommentSection postId={post._id}/>
+      <CommentSection postId={post._id} />
+      <div className="flex flex-col justify-center items-center mb-5">
+        <h1 className="text-xl mt-5">Recent Post</h1>
+        <div className="flex flex-wrap gap-5 mt-5 justify-center">
+          {recentPost &&
+            recentPost.map((post) => {
+              return <PostCard key={post._id} post={post} />;
+            })}
+        </div>
+      </div>
     </main>
   );
 }

@@ -114,6 +114,20 @@ export const getPosts = async (userId, startIndex, success) => {
     });
 };
 
+export const getRecentPosts = async (limit, success) => {
+  dispatchStartLoading();
+  await fetch(`/api/posts/get?limit=${limit}`)
+    .then((res) => res.json())
+    .then((payload) => {
+      if (!payload.success) {
+        dispatchError(payload.message);
+        return;
+      }
+      dispatchStopLoading();
+      success(payload.data.posts);
+    });
+};
+
 export const updatePost = async (formData, currentUserId, success) => {
   dispatchStartLoading(null);
   fetch(`/api/posts/update/${formData._id}/${currentUserId}`, {

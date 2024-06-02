@@ -27,6 +27,7 @@ export const createPost = async (req, res, next) => {
   }
 };
 
+//TODO : Sort order not working
 export const getPosts = async (req, res, next) => {
   try {
     const startIndex = parseInt(req.query.startIndex) || 0;
