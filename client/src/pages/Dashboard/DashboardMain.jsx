@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
-import DashSidebar from "../components/DashSidebar";
-import DashProfile from "../components/DashProfile";
-import DashPosts from "../components/DashPosts";
-import DashUsers from "../components/DashUsers";
-import DashComments from "../components/DashComments";
+import DashboardSidebar from "../../components/DashboardSidebar";
+import DashProfile from "./DashProfile";
+import DashPosts from "./DashPosts";
+import DashUsers from "./DashUsers";
+import DashComments from "./DashComments";
 
-export default function Dashboard() {
+export default function DashboardMain() {
   const location = useLocation();
   const [tab, setTab] = useState("");
 
@@ -21,7 +21,7 @@ export default function Dashboard() {
     <div className="min-h-screen flex flex-col md:flex-row">
       <div className="md:w-56">
         {/* Sidebar */}
-        <DashSidebar tab={tab} />
+        <DashboardSidebar tab={tab} />
       </div>
       {/* profile */}
       {tab === "profile" && <DashProfile />}

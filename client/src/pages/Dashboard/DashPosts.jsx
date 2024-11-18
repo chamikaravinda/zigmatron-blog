@@ -1,49 +1,50 @@
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Table } from "flowbite-react";
-import { FaCheck, FaTimes } from "react-icons/fa";
-import { getUsers, deleteAnyUser } from "../actions/user.action";
-import TwoOptionModel from "./TwoOptionModel";
+import { Link } from "react-router-dom";
+import { deletePost, getPosts } from "../../actions/post.action";
+import TwoOptionModel from "../../components/TwoOptionModel";
 
-export default function DashUsers() {
-  const [users, setUsers] = useState([]);
+export default function DashPosts() {
+  const [userPosts, setUserPosts] = useState([]);
   const [showMore, setShowMore] = useState(true);
   const [showModel, setShowModel] = useState(false);
-  const [userIdToDelete, setUserIdToDelete] = useState("");
+  const [postIdToDelete, setPostIdToDelete] = useState("");
 
   const { currentUser } = useSelector((state) => state.user);
 
   useEffect(() => {
-    const success = (users) => {
-      setUsers(users);
-      if (users.length < 9) {
+    const success = (posts) => {
+      setUserPosts(posts);
+      if (posts && posts.length < 9) {
         setShowMore(false);
       }
     };
     if (currentUser.userRole === "ADMIN") {
-      getUsers(0, success);
+      getPosts(currentUser._id, 0, success);
     }
   }, [currentUser]);
 
   const handleShowMore = async () => {
-    const startIndex = users.length;
-    const success = (users) => {
-      setUsers((prev) => [...prev, ...users]);
-      if (users.length < 9) {
+    const startIndex = userPosts.length;
+    const success = (posts) => {
+      setUserPosts((prev) => [...prev, ...posts]);
+      if (posts && posts.length < 9) {
         setShowMore(false);
       }
     };
-    if (currentUser.userRole === "ADMIN") {
-      getUsers(startIndex, success);
-    }
+
+    getPosts(currentUser._id, startIndex, success);
   };
 
-  const handleDeleteUser = async () => {
+  const handleDeletePost = async () => {
     setShowModel(false);
     const success = () => {
-      setUsers((prev) => prev.filter((user) => user._id !== userIdToDelete));
+      setUserPosts((prev) =>
+        prev.filter((post) => post._id !== postIdToDelete)
+      );
     };
-    await deleteAnyUser(userIdToDelete, success);
+    deletePost(postIdToDelete, currentUser._id, success);
   };
 
   return (
@@ -52,56 +53,70 @@ export default function DashUsers() {
      scrollbar-track-slate-100 scrollbar-thumb-slate-300
       dark:scrollbar-track-slate-700 dark:scrollbar-thumb-slate-500"
     >
-      {currentUser.userRole === "ADMIN" && users.length > 0 ? (
+      {currentUser.userRole === "ADMIN" && userPosts.length > 0 ? (
         <>
           <Table hoverable className="shadow-md">
             <Table.Head>
               <Table.HeadCell className="bg-gray-200">
-                Date created
+                Date updated
               </Table.HeadCell>
               <Table.HeadCell className="bg-gray-200">
-                User image
+                Post image
               </Table.HeadCell>
-              <Table.HeadCell className="bg-gray-200">Username</Table.HeadCell>
-              <Table.HeadCell className="bg-gray-200">Email</Table.HeadCell>
-              <Table.HeadCell className="bg-gray-200">Admin</Table.HeadCell>
+              <Table.HeadCell className="bg-gray-200">
+                Post title
+              </Table.HeadCell>
+              <Table.HeadCell className="bg-gray-200">Category</Table.HeadCell>
               <Table.HeadCell className="bg-gray-200">Delete</Table.HeadCell>
+              <Table.HeadCell className="bg-gray-200">
+                <span>Edit</span>
+              </Table.HeadCell>
             </Table.Head>
             <Table.Body className="divide-y">
-              {users.map((user) => (
+              {userPosts.map((post) => (
                 <Table.Row
                   className="bg-white dark:border-gray-700 dark:bg-gray-800"
-                  key={user._id}
+                  key={post.slug}
                 >
                   <Table.Cell>
-                    {new Date(user.createdAt).toLocaleDateString()}
+                    {new Date(post.updatedAt).toLocaleDateString()}
                   </Table.Cell>
                   <Table.Cell>
-                    <img
-                      src={user.profilePicture}
-                      alt={user.username}
-                      className="w-10 h-10 object-cover bg-gray-500 rounder-full"
-                    />
+                    <Link to={`/post/${post.slug}`}>
+                      <img
+                        src={post.image}
+                        alt={post.title}
+                        className="2-20 h-10 object-cover bg-gray-500"
+                      />
+                    </Link>
                   </Table.Cell>
-                  <Table.Cell>{user.username}</Table.Cell>
-                  <Table.Cell>{user.email}</Table.Cell>
                   <Table.Cell>
-                    {user.userRole === "ADMIN" ? (
-                      <FaCheck className="text-green-500" />
-                    ) : (
-                      <FaTimes className="text-red-500" />
-                    )}
+                    <Link
+                      className="font-medium text-gray-900 dark:text-white"
+                      to={`/post/${post.slug}`}
+                    >
+                      {post.title}
+                    </Link>
                   </Table.Cell>
+                  <Table.Cell>{post.category}</Table.Cell>
                   <Table.Cell>
                     <span
                       onClick={() => {
                         setShowModel(true);
-                        setUserIdToDelete(user._id);
+                        setPostIdToDelete(post._id);
                       }}
                       className="font-medium text-red-500 hover:text-red-700"
                     >
                       Delete
                     </span>
+                  </Table.Cell>
+                  <Table.Cell>
+                    <Link
+                      className="text-teal-500 hover:text-teal-700"
+                      to={`/update-post/${post._id}`}
+                    >
+                      <span>Edit</span>
+                    </Link>
                   </Table.Cell>
                 </Table.Row>
               ))}
@@ -120,17 +135,17 @@ export default function DashUsers() {
             onClose={() => {
               setShowModel(false);
             }}
-            ModelMessage="Are you sure you want to delete this user"
+            ModelMessage="Are you sure you want to delete this post"
             AcceptBtnText="Yes,I'm sure"
             CancelBtnText="No,Cancel"
-            AcceptAction={handleDeleteUser}
+            AcceptAction={handleDeletePost}
             CancelAction={() => {
               setShowModel(false);
             }}
           />
         </>
       ) : (
-        <p> You have no users yet </p>
+        <p> You have no post yet </p>
       )}
     </div>
   );

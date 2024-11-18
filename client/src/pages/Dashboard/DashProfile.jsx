@@ -4,14 +4,14 @@ import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { CircularProgressbar } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
-import { dispatchError } from "../actions/notifications.action.js";
+import { dispatchError } from "../../actions/notifications.action.js";
 import {
   uploadProfilePicture,
   updateProfile,
   deleteUser,
   signOut,
-} from "../actions/user.action.js";
-import TwoOptionModel from "./TwoOptionModel";
+} from "../../actions/user.action.js";
+import TwoOptionModel from "../../components/TwoOptionModel.jsx";
 
 export default function DashProfile() {
   const { currentUser } = useSelector((state) => state.user);

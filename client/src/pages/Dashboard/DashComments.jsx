@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Table } from "flowbite-react";
-import { getComments, deleteComment } from "../actions/comment.action";
-import TwoOptionModel from "./TwoOptionModel";
+import { getComments, deleteComment } from "../../actions/comment.action";
+import TwoOptionModel from "../../components/TwoOptionModel";
 
 export default function DashComments() {
   const [comments, setComments] = useState([]);

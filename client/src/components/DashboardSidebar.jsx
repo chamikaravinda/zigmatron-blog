@@ -12,7 +12,7 @@ import { FaRegCommentDots } from "react-icons/fa6";
 import { useSelector } from "react-redux";
 import { signOut } from "../actions/user.action";
 
-export default function DashSidebar(props) {
+export default function DashboardSidebar(props) {
   const { currentUser } = useSelector((state) => state.user);
   const { tab } = useState(props.tab);
 
@@ -77,6 +77,6 @@ export default function DashSidebar(props) {
   );
 }
 
-DashSidebar.propTypes = {
+DashboardSidebar.propTypes = {
   tab: PropTypes.any.isRequired,
 };
