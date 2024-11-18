@@ -87,3 +87,15 @@ export const deleteComment = (commentId, success) => {
       success();
     });
 };
+
+export const getComments = async (startIndex, success) => {
+  await fetch(`/api/comment/get-comments?startIndex=${startIndex}`)
+    .then((res) => res.json())
+    .then((payload) => {
+      if (!payload.success) {
+        dispatchError(payload.message);
+        return;
+      }
+      success(payload.data);
+    });
+};

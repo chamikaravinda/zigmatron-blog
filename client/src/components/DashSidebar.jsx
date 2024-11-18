@@ -8,6 +8,7 @@ import {
   HiDocumentText,
   HiOutlineUser,
 } from "react-icons/hi";
+import { FaRegCommentDots } from "react-icons/fa6";
 import { useSelector } from "react-redux";
 import { signOut } from "../actions/user.action";
 
@@ -49,6 +50,16 @@ export default function DashSidebar(props) {
                   as="div"
                 >
                   Users
+                </Sidebar.Item>
+              </Link>
+              <Link to="/dashboard?tab=comments">
+                <Sidebar.Item
+                  active={tab === "comments"}
+                  icon={FaRegCommentDots}
+                  labelColor="dark"
+                  as="div"
+                >
+                  Comments
                 </Sidebar.Item>
               </Link>
             </>
