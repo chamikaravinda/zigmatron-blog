@@ -5,8 +5,9 @@ import DashProfile from "./DashProfile";
 import DashPosts from "./DashPosts";
 import DashUsers from "./DashUsers";
 import DashComments from "./DashComments";
+import DashMain from "./DashMain";
 
-export default function DashboardMain() {
+export default function Dashboard() {
   const location = useLocation();
   const [tab, setTab] = useState("");
 
@@ -31,6 +32,8 @@ export default function DashboardMain() {
       {tab === "users" && <DashUsers />}
       {/* comments */}
       {tab === "comments" && <DashComments />}
+      {/* main dashboard */}
+      {tab === "main" && <DashMain />}
     </div>
   );
 }

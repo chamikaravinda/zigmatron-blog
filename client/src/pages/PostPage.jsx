@@ -19,7 +19,7 @@ export default function PostPage() {
   }, [slug]);
 
   useEffect(() => {
-    const success = (post) => {
+    const success = ({post}) => {
       setRecentPost(post);
     };
     getRecentPosts(3, success);

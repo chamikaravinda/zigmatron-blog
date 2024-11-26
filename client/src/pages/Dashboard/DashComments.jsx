@@ -13,9 +13,9 @@ export default function DashComments() {
   const { currentUser } = useSelector((state) => state.user);
 
   useEffect(() => {
-    const success = (data) => {
-      setComments(data.comments);
-      if (data.comments.length < 9) {
+    const success = ({comments}) => {
+      setComments(comments);
+      if (comments.length < 9) {
         setShowMore(false);
       }
     };
@@ -26,9 +26,9 @@ export default function DashComments() {
 
   const handleShowMore = async () => {
     const startIndex = comments.length;
-    const success = (data) => {
-      setComments((prev) => [...prev, ...data.comments]);
-      if (data.comments.length < 9) {
+    const success = ({comments}) => {
+      setComments((prev) => [...prev, comments]);
+      if (comments.length < 9) {
         setShowMore(false);
       }
     };

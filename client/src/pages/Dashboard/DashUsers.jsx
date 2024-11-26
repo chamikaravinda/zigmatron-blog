@@ -14,7 +14,7 @@ export default function DashUsers() {
   const { currentUser } = useSelector((state) => state.user);
 
   useEffect(() => {
-    const success = (users) => {
+    const success = ({users}) => {
       setUsers(users);
       if (users.length < 9) {
         setShowMore(false);
@@ -27,7 +27,7 @@ export default function DashUsers() {
 
   const handleShowMore = async () => {
     const startIndex = users.length;
-    const success = (users) => {
+    const success = ({users}) => {
       setUsers((prev) => [...prev, ...users]);
       if (users.length < 9) {
         setShowMore(false);

@@ -124,7 +124,7 @@ export const getRecentPosts = async (limit, success) => {
         return;
       }
       dispatchStopLoading();
-      success(payload.data.posts);
+      success(payload.data);
     });
 };
 

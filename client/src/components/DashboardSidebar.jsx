@@ -7,6 +7,8 @@ import {
   HiArrowSmRight,
   HiDocumentText,
   HiOutlineUser,
+  HiDatabase,
+  HiChartPie,
 } from "react-icons/hi";
 import { FaRegCommentDots } from "react-icons/fa6";
 import { useSelector } from "react-redux";
@@ -20,19 +22,18 @@ export default function DashboardSidebar(props) {
     <Sidebar className="w-full md:w-56">
       <Sidebar.Items>
         <Sidebar.ItemGroup className="flex flex-col gap-1">
-          <Link to="/dashboard?tab=profile">
-            <Sidebar.Item
-              active={tab === "profile"}
-              icon={HiUser}
-              label={currentUser.userRole}
-              labelColor="dark"
-              as="div"
-            >
-              Profile
-            </Sidebar.Item>
-          </Link>
           {currentUser.userRole === "ADMIN" && (
             <>
+              <Link to="/dashboard?tab=main">
+                <Sidebar.Item
+                  active={tab === "main" || !tab}
+                  icon={HiChartPie}
+                  labelColor="dark"
+                  as="div"
+                >
+                  Dashbooard
+                </Sidebar.Item>
+              </Link>
               <Sidebar.Collapse icon={HiDocumentText} label="Posts">
                 <Sidebar.Item
                   href="/dashboard?tab=posts"
@@ -64,6 +65,17 @@ export default function DashboardSidebar(props) {
               </Link>
             </>
           )}
+          <Link to="/dashboard?tab=profile">
+            <Sidebar.Item
+              active={tab === "profile"}
+              icon={HiUser}
+              label={currentUser.userRole}
+              labelColor="dark"
+              as="div"
+            >
+              Profile
+            </Sidebar.Item>
+          </Link>
           <Sidebar.Item
             icon={HiArrowSmRight}
             className="cursor-pointer"

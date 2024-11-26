@@ -121,7 +121,7 @@ export const getUsers = async (startIndex, success) => {
         return;
       }
       dispatchStopLoading();
-      success(payload.data.users);
+      success(payload.data);
     })
     .catch((error) => {
       dispatchError(error.message);
