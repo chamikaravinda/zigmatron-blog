@@ -19,6 +19,7 @@ export default function Dashboard() {
     }
   }, [location.search]);
   return (
+    //TODO : move this to route and fix auth
     <div className="min-h-screen flex flex-col md:flex-row">
       <div className="md:w-56">
         {/* Sidebar */}
