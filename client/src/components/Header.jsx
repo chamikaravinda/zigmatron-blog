@@ -60,6 +60,11 @@ export default function Header() {
             <Link to={"/dashboard?tab=profile"}>
               <Dropdown.Item>Profile</Dropdown.Item>
             </Link>
+            {currentUser && currentUser.userRole === `ADMIN` && (
+              <Link to={"/dashboard?tab=main"}>
+                <Dropdown.Item>Dashboard</Dropdown.Item>
+              </Link>
+            )}
             <Dropdown.Divider />
             <Dropdown.Item onClick={signOut}>Sign Out</Dropdown.Item>
           </Dropdown>
