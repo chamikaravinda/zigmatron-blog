@@ -48,7 +48,7 @@ export default function Home() {
             </h2>
             <div className="flex flex-wrap gap-4 place-content-center place-items-center lg:grid-col-4">
               {posts.map((post) => (
-                <PostCard key={post.id} post={post} />
+                <PostCard key={post._id} post={post} />
               ))}
             </div>
             <div className="py-3 md:pl-8 ">

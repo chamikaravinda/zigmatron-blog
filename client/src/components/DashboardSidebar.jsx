@@ -7,7 +7,6 @@ import {
   HiArrowSmRight,
   HiDocumentText,
   HiOutlineUser,
-  HiDatabase,
   HiChartPie,
 } from "react-icons/hi";
 import { FaRegCommentDots } from "react-icons/fa6";
@@ -19,7 +18,7 @@ export default function DashboardSidebar(props) {
   const { tab } = useState(props.tab);
 
   return (
-    <Sidebar className="w-full md:w-56">
+    <Sidebar className="w-full md:w-56 shadow-lg">
       <Sidebar.Items>
         <Sidebar.ItemGroup className="flex flex-col gap-1">
           {currentUser.userRole === "ADMIN" && (
@@ -31,7 +30,7 @@ export default function DashboardSidebar(props) {
                   labelColor="dark"
                   as="div"
                 >
-                  Dashbooard
+                  Dashboard
                 </Sidebar.Item>
               </Link>
               <Sidebar.Collapse icon={HiDocumentText} label="Posts">

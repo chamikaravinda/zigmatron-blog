@@ -166,7 +166,6 @@ export default function DashMain() {
             <Table.Body>
               {comments &&
                 comments.map((comment) => {
-                  console.log(comment);
                   return (
                     <Table.Row
                       key={comment._id}

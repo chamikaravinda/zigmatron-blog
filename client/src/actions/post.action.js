@@ -161,3 +161,21 @@ export const deletePost = async (postId, userId, success) => {
       success();
     });
 };
+
+export const searchPosts = async (searchQuery, success, failure) => {
+  dispatchStartLoading();
+  await fetch(`/api/posts/get?${searchQuery}`)
+    .then((res) => res.json())
+    .then((payload) => {
+      if (!payload.success) {
+        dispatchError(payload.message);
+        return;
+      }
+      dispatchStopLoading();
+      success(payload.data);
+    })
+    .catch(() => {
+      dispatchStopLoading();
+      failure();
+    });
+};
