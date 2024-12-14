@@ -1,8 +1,11 @@
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
-import DashSidebar from "../components/DashSidebar";
-import DashProfile from "../components/DashProfile";
-import DashPosts from "../components/DashPosts";
+import DashboardSidebar from "../../components/DashboardSidebar";
+import DashProfile from "./DashProfile";
+import DashPosts from "./DashPosts";
+import DashUsers from "./DashUsers";
+import DashComments from "./DashComments";
+import DashMain from "./DashMain";
 
 export default function Dashboard() {
   const location = useLocation();
@@ -16,15 +19,22 @@ export default function Dashboard() {
     }
   }, [location.search]);
   return (
+    //TODO : move this to route and fix auth
     <div className="min-h-screen flex flex-col md:flex-row">
       <div className="md:w-56">
         {/* Sidebar */}
-        <DashSidebar />
+        <DashboardSidebar tab={tab} />
       </div>
       {/* profile */}
       {tab === "profile" && <DashProfile />}
       {/* post */}
       {tab === "posts" && <DashPosts />}
+      {/* users */}
+      {tab === "users" && <DashUsers />}
+      {/* comments */}
+      {tab === "comments" && <DashComments />}
+      {/* main dashboard */}
+      {tab === "main" && <DashMain />}
     </div>
   );
 }

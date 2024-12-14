@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { Table, Modal, Button } from "flowbite-react";
+import { Table } from "flowbite-react";
 import { Link } from "react-router-dom";
-import { HiOutlineExclamationCircle } from "react-icons/hi";
+import { deletePost, getPosts } from "../../actions/post.action";
+import TwoOptionModel from "../../components/TwoOptionModel";
 
 export default function DashPosts() {
   const [userPosts, setUserPosts] = useState([]);
@@ -13,62 +14,37 @@ export default function DashPosts() {
   const { currentUser } = useSelector((state) => state.user);
 
   useEffect(() => {
-    const fetchPosts = async () => {
-      try {
-        const res = await fetch(`/api/posts/get?userId=${currentUser._id}`);
-        const data = await res.json();
-        if (res.ok) {
-          setUserPosts(data.posts);
-          if (data.posts.length < 9) {
-            setShowMore(false);
-          }
-        }
-      } catch (error) {
-        console.log(error);
+    const success = (posts) => {
+      setUserPosts(posts);
+      if (posts && posts.length < 9) {
+        setShowMore(false);
       }
     };
     if (currentUser.userRole === "ADMIN") {
-      fetchPosts();
+      getPosts(currentUser._id, 0, success);
     }
   }, [currentUser]);
 
   const handleShowMore = async () => {
     const startIndex = userPosts.length;
-    try {
-      const res = await fetch(
-        `/api/posts/get?userId=${currentUser._id}&startIndex=${startIndex}`
-      );
-      const data = await res.json();
-      if (res.ok) {
-        setUserPosts((prev) => [...prev, ...data.posts]);
-        if (data.posts.length < 9) {
-          setShowMore(false);
-        }
+    const success = (posts) => {
+      setUserPosts((prev) => [...prev, ...posts]);
+      if (posts && posts.length < 9) {
+        setShowMore(false);
       }
-    } catch (error) {
-      console.log(error);
-    }
+    };
+
+    getPosts(currentUser._id, startIndex, success);
   };
 
   const handleDeletePost = async () => {
     setShowModel(false);
-    try {
-      const res = await fetch(
-        `/api/posts/delete/${postIdToDelete}/${currentUser._id}`,
-        { method: "DELETE" }
+    const success = () => {
+      setUserPosts((prev) =>
+        prev.filter((post) => post._id !== postIdToDelete)
       );
-
-      const data = await res.json();
-      if (!res.ok) {
-        console.log(data.message);
-      } else {
-        setUserPosts((prev) =>
-          prev.filter((post) => post._id !== postIdToDelete)
-        );
-      }
-    } catch (error) {
-      console.log(error.message);
-    }
+    };
+    deletePost(postIdToDelete, currentUser._id, success);
   };
 
   return (
@@ -154,33 +130,19 @@ export default function DashPosts() {
               Show More
             </button>
           )}
-          <Modal
-            show={showModel}
+          <TwoOptionModel
+            showModel={showModel}
             onClose={() => {
               setShowModel(false);
             }}
-            popup
-            size="md"
-          >
-            <Modal.Header>
-              <Modal.Body>
-                <div className="text-center">
-                  <HiOutlineExclamationCircle className="h-14 w-14 text-gray-400 dark:text-gray-200 mb-4 mx-auto" />
-                  <h3 className="mb-5 text-lg text-gray-500 dark:text-gray-400">
-                    Are you sure you want to delete this post ?
-                  </h3>
-                  <div className="flex justify-center gap-4">
-                    <Button color="failure" onClick={handleDeletePost}>
-                      Yes, I'm sure
-                    </Button>
-                    <Button onClick={() => setShowModel(false)}>
-                      No, Cancel
-                    </Button>
-                  </div>
-                </div>
-              </Modal.Body>
-            </Modal.Header>
-          </Modal>
+            ModelMessage="Are you sure you want to delete this post"
+            AcceptBtnText="Yes,I'm sure"
+            CancelBtnText="No,Cancel"
+            AcceptAction={handleDeletePost}
+            CancelAction={() => {
+              setShowModel(false);
+            }}
+          />
         </>
       ) : (
         <p> You have no post yet </p>

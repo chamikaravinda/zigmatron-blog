@@ -5,6 +5,11 @@ import { app } from "../firebase";
 import { useDispatch } from "react-redux";
 import { signInSuccess } from "../state/user/userSlice";
 import { useNavigate } from "react-router-dom";
+import {
+  loadingStart,
+  loadingStop,
+  errorNotification,
+} from "../state/notifications/notificationSlice";
 
 export default function OAuth() {
   const auth = getAuth(app);
@@ -16,6 +21,7 @@ export default function OAuth() {
     provider.setCustomParameters({ prompt: "select_account" });
     try {
       const resultFromGoogle = await signInWithPopup(auth, provider);
+      dispatch(loadingStart())
       const res = await fetch("/api/auth//google-auth", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -26,12 +32,17 @@ export default function OAuth() {
         }),
       });
       const data = await res.json();
-      if (res.ok) {
-        dispatch(signInSuccess(data));
-        navigate('/')
+
+      if (!res.ok) {
+        dispatch(errorNotification(data.message));
+        return;
       }
+      
+      dispatch(signInSuccess(data));
+      dispatch(loadingStop())
+      navigate('/')
     } catch (error) {
-      console.log(error);
+        dispatch(errorNotification(error));
     }
   };
 

@@ -5,7 +5,7 @@ import { initializeApp } from "firebase/app";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  apiKey: "AIzaSyDr8UVnKxvAscsfYcmJ5VJk-XcMNRgyics",
   authDomain: "zigma-blog.firebaseapp.com",
   projectId: "zigma-blog",
   storageBucket: "zigma-blog.appspot.com",
@@ -15,4 +15,3 @@ const firebaseConfig = {
 
 // Initialize Firebase
 export const app = initializeApp(firebaseConfig);
-

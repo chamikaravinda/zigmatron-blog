@@ -1,4 +1,4 @@
-import { errorHandler } from "../utils/error.js";
+import { errorHandler, successHandler } from "../utils/response.js";
 import User from "../models/user.model.js";
 
 export const test = (req, res) => {
@@ -46,19 +46,19 @@ export const updateUser = async (req, res, next) => {
       { new: true }
     );
     const { password, ...rest } = updateUser._doc;
-    res.status(200).json(rest);
+    res.status(200).json(successHandler(200, "Update post success", rest));
   } catch (error) {
     next(error);
   }
 };
 
 export const deleteUser = async (req, res, next) => {
-  if (req.user.id !== req.params.userId) {
+  if (!(req.user.userRole === "ADMIN") && req.user.id !== req.params.userId) {
     return next(errorHandler(403, "Your are not allowed to delete this user"));
   }
   try {
     await User.findByIdAndDelete(req.params.userId);
-    res.status(200).json("User has been delete");
+    res.status(200).json(successHandler(200, "User has been delete"));
   } catch (error) {
     next(error);
   }
@@ -69,7 +69,51 @@ export const signout = (req, res, next) => {
     res
       .clearCookie("access_token")
       .status(200)
-      .json("User has been signed out");
+      .json(successHandler(200, "User has been signed out"));
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getUsers = async (req, res, next) => {
+  if (!(req.user.userRole == "ADMIN")) {
+    return next(errorHandler(403, "Your are not allowed to see all users"));
+  }
+
+  try {
+    const startIndex = parseInt(req.query.startIndex) || 0;
+    const limit = parseInt(req.query.limit) || 9;
+    const sortDirection = req.query.sort === "asc" ? 1 : -1;
+
+    const users = await User.find()
+      .sort({ createdAt: sortDirection })
+      .skip(startIndex)
+      .limit(limit);
+
+    const filteredUsers = users.map((user) => {
+      const { password, ...rest } = user._doc;
+      return rest;
+    });
+
+    const totalUsers = await User.countDocuments();
+
+    //TODO: move the one month back date to common
+    const now = new Date();
+    const oneMonthAgo = new Date(
+      now.getFullYear(),
+      now.getMonth() - 1,
+      now.getDate()
+    );
+
+    const lastMonthUsers = await User.countDocuments({
+      createdAt: { $gte: oneMonthAgo },
+    });
+
+    res.status(200).json(successHandler(200, "Get users is success",{
+      users: filteredUsers,
+      totalUsers,
+      lastMonthUsers,
+    }));
   } catch (error) {
     next(error);
   }

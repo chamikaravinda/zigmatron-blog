@@ -1,19 +1,29 @@
 import { FileInput, Select, TextInput } from "flowbite-react";
 import { Button } from "flowbite-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import { CircularProgressbar } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
-import { useNavigate } from "react-router-dom";
-import { createPost, uploadPostImage } from "../actions/post.action";
+import { useNavigate, useParams } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { getPost, updatePost, uploadPostImage } from "../actions/post.action";
 
-export default function CreatePost() {
+export default function UpdatePost() {
   const [file, setFile] = useState(null);
   const [imageUploadProgress, setImageUploadProgress] = useState(null);
-  const [formData, setFormData] = useState(null);
+  const [formData, setFormData] = useState({});
+  const { postId } = useParams();
+  const { currentUser } = useSelector((state) => state.user);
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const success = (post) => {
+      setFormData(post);
+    };
+    getPost(postId, success);
+  }, []);
 
   const handleUploadImage = async () => {
     setImageUploadProgress(null);
@@ -41,12 +51,12 @@ export default function CreatePost() {
     const success = (slug) => {
       navigate(`/post/${slug}`);
     };
-    await createPost(formData, success);
+    await updatePost(formData, currentUser._id, success);
   };
 
   return (
     <div className="p-3 max-w-3xl mx-auto min-h-screen">
-      <h1 className="text-center text-3xl my-7 font-semibold">Create a post</h1>
+      <h1 className="text-center text-3xl my-7 font-semibold">Update post</h1>
       <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
         <div className="flex flex-col gap-4 sm:flex-row justify-between">
           <TextInput
@@ -58,12 +68,14 @@ export default function CreatePost() {
             onChange={(e) =>
               setFormData({ ...formData, [e.target.id]: e.target.value })
             }
+            value={formData.title}
           />
           <Select
             id="category"
             onChange={(e) =>
               setFormData({ ...formData, [e.target.id]: e.target.value })
             }
+            value={formData.category}
           >
             <option value="uncategorized">Select a category</option>
             <option value="javascript">Javascript</option>
@@ -110,9 +122,10 @@ export default function CreatePost() {
           placeholder="Write something..... "
           className="h-72 mb-12"
           onChange={(value) => setFormData({ ...formData, content: value })}
+          value={formData.content}
         />
         <Button type="submit" gradientDuoTone="purpleToPink">
-          Publish
+          Update
         </Button>
       </form>
     </div>
