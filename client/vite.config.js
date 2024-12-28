@@ -12,4 +12,7 @@ export default defineConfig({
     },
   },
   plugins: [react()],
+  ssr: {
+    noExternal: ['redux-persist-node-storage'],
+  },
 });
